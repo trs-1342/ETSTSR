@@ -27,7 +27,7 @@ export default function ProductInfo() {
     const fetchUser = async () => {
       try {
         const response = await fetch(
-          "http://78.188.217.104:2431/api/checkAdmin",
+          "http://192.168.1.108:2431/api/checkAdmin",
           {
             credentials: "include",
           }
@@ -53,7 +53,7 @@ export default function ProductInfo() {
     const fetchKayit = async () => {
       try {
         const response = await fetch(
-          `http://78.188.217.104:2431/api/getInfoProd/${fishNo}`,
+          `http://192.168.1.108:2431/api/getInfoProd/${fishNo}`,
           { credentials: "include" }
         );
 
@@ -80,7 +80,7 @@ export default function ProductInfo() {
   useEffect(() => {
     const fetchPrinters = async () => {
       try {
-        const response = await fetch("http://78.188.217.104:2431/api/printers");
+        const response = await fetch("http://192.168.1.108:2431/api/printers");
         if (!response.ok) {
           throw new Error(`Sunucu hatası: ${response.status}`);
         }
@@ -149,7 +149,7 @@ tercih etmemeniz halinde 500 tl arıza tespit ücreti ödemeniz gerekecektir.`,
     };
 
     try {
-      const response = await fetch("http://78.188.217.104:2431/api/print", {
+      const response = await fetch("http://192.168.1.108:2431/api/print", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(printData),
@@ -291,7 +291,7 @@ tercih etmemeniz halinde 500 tl arıza tespit ücreti ödemeniz gerekecektir.`,
           <button
             onClick={async () => {
               const response = await fetch(
-                "http://78.188.217.104:2431/api/client-printers"
+                "http://192.168.1.108:2431/api/client-printers"
               );
               const printers = await response.json();
               console.log("İstemcideki Yazıcılar:", printers);
@@ -317,7 +317,7 @@ tercih etmemeniz halinde 500 tl arıza tespit ücreti ödemeniz gerekecektir.`,
                   if (confirmDelete) {
                     try {
                       const response = await fetch(
-                        `http://78.188.217.104:2431/api/deleteProduct/${kayit.fishNo}`,
+                        `http://192.168.1.108:2431/api/deleteProduct/${kayit.fishNo}`,
                         {
                           method: "DELETE",
                           credentials: "include",

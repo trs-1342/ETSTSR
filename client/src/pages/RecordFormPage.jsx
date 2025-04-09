@@ -45,7 +45,7 @@ export default function EditPage() {
     const fetchUser = async () => {
       try {
         const response = await fetch(
-          "http://78.188.217.104:2431/api/checkAdmin",
+          "http://192.168.1.108:2431/api/checkAdmin",
           {
             credentials: "include",
           }
@@ -73,7 +73,7 @@ export default function EditPage() {
       return;
     }
 
-    fetch(`http://78.188.217.104:2431/api/record/${fishNo}`)
+    fetch(`http://192.168.1.108:2431/api/record/${fishNo}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP hata kodu: ${response.status}`);
@@ -187,7 +187,7 @@ export default function EditPage() {
       })
     );
 
-    fetch(`http://78.188.217.104:2431/api/record/${fishNo}`, {
+    fetch(`http://192.168.1.108:2431/api/record/${fishNo}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(temizKayit),

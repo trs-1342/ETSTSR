@@ -15,7 +15,7 @@ export default function AddUserPage() {
 
     try {
       const response = await axios.post(
-        "http://78.188.217.104:2431/api/add-user",
+        "http://192.168.1.108:2431/api/add-user",
         {
           username,
           password,
@@ -26,7 +26,7 @@ export default function AddUserPage() {
 
       if (response.data.success) {
         setMessage("Kullanıcı başarıyla eklendi!");
-        window.location.href = "http://78.188.217.104:3000/";
+        window.location.href = "http://78.188.217.104:1342/";
       } else {
         setMessage("Bir hata oluştu. Lütfen tekrar deneyin.");
       }
