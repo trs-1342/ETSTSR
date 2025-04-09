@@ -19,11 +19,11 @@ export default function ShowUserInfoPage() {
       }
 
       // alert("Çıkış başarılı.");
-      window.location.href = "http://78.188.217.104:80/";
+      window.location.href = "http://78.188.217.104:3000/";
     } catch (error) {
       console.error("Çıkış hatası:", error.message);
       // alert(`Çıkış Yapıldı, Çıkış hatası: ${error.message}`);
-      window.location.href = "http://78.188.217.104:80/";
+      window.location.href = "http://78.188.217.104:3000/";
     }
   };
 

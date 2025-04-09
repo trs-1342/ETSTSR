@@ -26,7 +26,7 @@ export default function AddUserPage() {
 
       if (response.data.success) {
         setMessage("Kullanıcı başarıyla eklendi!");
-        window.location.href = "http://78.188.217.104:80/";
+        window.location.href = "http://78.188.217.104:3000/";
       } else {
         setMessage("Bir hata oluştu. Lütfen tekrar deneyin.");
       }

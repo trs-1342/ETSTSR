@@ -88,7 +88,7 @@ export default function AddProductPage() {
       }
 
       alert("Kayıt başarıyla eklendi.");
-      window.location.href = "http://78.188.217.104:80/";
+      window.location.href = "http://78.188.217.104:3000/";
       const data = JSON.parse(text);
       console.log("Ürün eklendi:", data);
     } catch (error) {
