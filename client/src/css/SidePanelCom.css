@@ -1,0 +1,134 @@
+/* Menü Aç/Kapat Butonu */
+.menu-toggle {
+  position: fixed;
+  left: 10px;
+  top: 20px;
+  background-color: rgba(255, 0, 0, 0.5);
+  color: white;
+  padding: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+/* KAPALI Haldeki Menü */
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: -280px; /* Başlangıçta görünmesin. Masaüstü için 280px ideal. */
+  width: 280px;
+  height: 100vh;
+  background-color: #333;
+  color: white;
+  transition: left 0.3s ease-in-out;
+  z-index: 1000;
+  padding: 20px;
+
+  /* Uzun içeriklerde dikey kaydırma yapsın */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* AÇIK Haldeki Menü */
+.side-menu.open {
+  left: 0;
+}
+
+/* Menü içeriğini dikeyde kaydırmak isterseniz, 
+   menüye max-height verebilir, alt tarafta boşluk bırakabilirsiniz.
+   Örneğin:
+   .side-menu {
+     max-height: 90vh;
+     top: 5vh;
+   }
+*/
+
+/* Menü İçeriği */
+.menu-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Butonları düzenle */
+.side-menu a,
+.side-menu button {
+  color: white;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  font-size: 18px;
+  border: none;
+  transition: background 0.2s ease-in-out;
+}
+
+/* Butonların hover efekti */
+.side-menu a:hover,
+.side-menu button:hover {
+  background-color: #555;
+}
+
+/* --------------------------- */
+/*   Küçük Ekranlar (mobil)    */
+/* --------------------------- */
+@media (max-width: 576px) {
+  .side-menu {
+    width: 100%; /* Tam genişlik */
+    left: -100%; /* Menü kapalıyken ekrandan tamamen çıksın */
+    height: 100%; /* Yüksekliği de tam ekran */
+    max-height: 100vh; /* Taşma olmasın */
+    overflow-y: auto; /* İçerik taşarsa dikey kaydırma */
+  }
+  .side-menu.open {
+    left: 0;
+  }
+
+  /* Yazı boyutlarını biraz küçültme */
+  .side-menu a,
+  .side-menu button {
+    font-size: 16px;
+    padding: 8px;
+  }
+}
+
+/* --------------------------- */
+/* Orta Ekranlar (tablet)      */
+/* --------------------------- */
+@media (min-width: 577px) and (max-width: 992px) {
+  .side-menu {
+    width: 320px; /* Tabletler için hafif büyük tutabilirsiniz. */
+    left: -320px;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .side-menu.open {
+    left: 0;
+  }
+  .side-menu a,
+  .side-menu button {
+    font-size: 17px;
+    padding: 10px;
+  }
+}
+
+/* --------------------------- */
+/* Geniş Ekranlar (992px+)     */
+/* --------------------------- */
+@media (min-width: 992px) {
+  .side-menu {
+    width: 280px; /* Masaüstü için klasik 280px */
+    left: -280px;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .side-menu.open {
+    left: 0;
+  }
+  .side-menu a,
+  .side-menu button {
+    font-size: 18px;
+    padding: 12px;
+  }
+}
