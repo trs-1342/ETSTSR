@@ -25,6 +25,12 @@ app.use(bodyParser.json());
 
 const DB_TABLE_NAME = process.env.DB_TABLE_NAME;
 
+const ALLOWED_ORIGINS = [
+  "http://192.168.0.201:1342",
+  "http://192.168.0.201:1342",
+  "http://78.188.217.104:1342",
+];
+
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -59,7 +65,11 @@ app.use(
 
 app.use(
   cors({
-    origin: ["http://192.168.0.201:1342", "http://192.168.0.201:2431"],
+    origin: [
+      "http://192.168.0.201:1342",
+      "http://192.168.0.201:1342",
+      "http://78.188.217.104:1342",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -168,8 +178,8 @@ wss.on("connection", (ws, req) => {
 function authMiddleware(req, res, next) {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
 
   if (!req.session || !req.session.user) {
@@ -585,8 +595,8 @@ app.post("/api/xprint", (req, res) => {
 app.get("/api/checkAdmin", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const username = req.session?.user?.username;
 
@@ -622,8 +632,8 @@ app.get("/api/checkAdmin", (req, res) => {
 app.post("/api/logout", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   req.session.destroy((err) => {
     if (err) {
@@ -638,8 +648,8 @@ app.post("/api/logout", (req, res) => {
 app.post("/api/login", async (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const { username, password } = req.body;
 
@@ -700,8 +710,8 @@ app.post("/api/login", async (req, res) => {
 app.get("/api/check-product-access/:fishNo", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const { fishNo } = req.params;
   const username = req.session.user?.username;
@@ -732,8 +742,8 @@ app.get("/api/check-product-access/:fishNo", (req, res) => {
 app.post("/api/check-page-access", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const { username, page } = req.body;
 
@@ -811,8 +821,8 @@ app.get("/api/get-user-permissions/:username", (req, res) => {
 app.get("/api/get-session-user", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   if (req.session.user) {
     res.json({ username: req.session.user.username });
@@ -824,8 +834,8 @@ app.get("/api/get-session-user", (req, res) => {
 app.get("/api/get-user-records/:username", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const { username } = req.params;
 
@@ -894,8 +904,8 @@ app.get("/api/get-user-records/:username", (req, res) => {
 app.post("/api/add-user", async (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const { username, password, email, role } = req.body;
 
@@ -949,8 +959,8 @@ app.post("/api/add-user", async (req, res) => {
 app.put("/api/update-user/:id", async (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const userId = req.params.id;
   const { username, email, role, password } = req.body;
@@ -1017,8 +1027,8 @@ app.put("/api/update-user/:id", async (req, res) => {
 app.delete("/api/delete-user/:id", async (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const { id } = req.params;
 
@@ -1054,8 +1064,8 @@ app.delete("/api/delete-user/:id", async (req, res) => {
 app.get("/api/get-users-data", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const query = "SELECT id, username, email, role, created_at FROM users";
 
@@ -1072,8 +1082,8 @@ app.get("/api/get-users-data", (req, res) => {
 app.get("/api/get-user/:id", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const userId = req.params.id;
   const query =
@@ -1096,8 +1106,8 @@ app.get("/api/get-user/:id", (req, res) => {
 app.post("/api/update-settings-for-user/:id", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const userId = req.params.id;
   const { allowedColumns } = req.body;
@@ -1154,8 +1164,8 @@ app.get("/api/get-user-settings/:username", (req, res) => {
 app.post("/api/change-user-settings", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const { username, permissions } = req.body;
 
@@ -1227,8 +1237,8 @@ app.post("/api/change-user-settings", (req, res) => {
 app.get("/api/delivered-products", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const query = "SELECT * FROM records WHERE Durum = 'Teslim Edildi'";
   db.query(query, (err, results) => {
@@ -1249,8 +1259,8 @@ app.get("/api/delivered-products", (req, res) => {
 app.get("/api/getInfoProd/:fishNo", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const fishNo = req.params.fishNo;
 
@@ -1272,8 +1282,8 @@ app.get("/api/getInfoProd/:fishNo", (req, res) => {
 app.get("/api/protected", authMiddleware, (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
 
   const username = req.session.user?.username;
@@ -1320,8 +1330,8 @@ app.get("/api/protected", authMiddleware, (req, res) => {
 app.get("/api/records", authMiddleware, (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const { username, role } = req.user; // authMiddleware'den gelen kullanıcı bilgileri
 
@@ -1485,8 +1495,8 @@ app.put("/api/record/:fishNo", (req, res) => {
 app.get("/api/export-records", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const query = `
     SELECT fishNo, AdSoyad, DATE_FORMAT(TeslimAlmaTarihi, '%Y-%m-%d %H:%i:%s') AS TeslimAlmaTarihi, 
@@ -1511,8 +1521,8 @@ app.get("/api/export-records", (req, res) => {
 app.post("/api/record", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const { AdSoyad } = req.body;
 
@@ -1542,8 +1552,8 @@ const generateCustomID = () => {
 app.post("/api/addpro", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip;
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
 
   const {
@@ -1666,8 +1676,8 @@ app.post("/api/addpro", (req, res) => {
 app.delete("/api/deleteProduct/:fishNo", async (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
 
   const { fishNo } = req.params;
@@ -1700,22 +1710,21 @@ app.delete("/api/deleteProduct/:fishNo", async (req, res) => {
 app.get("/", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
 });
 
 app.all(/^\/.*/, (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip;
 
-  if (clientIP !== "http://192.168.0.201:1342") {
-    return res.redirect("http://192.168.0.201:1342/");
+  if (!ALLOWED_ORIGINS.includes(clientIP)) {
+    return res.status(403).json({ message: "Erişim reddedildi." });
   }
 
   res.status(404).send("Sayfa bulunamadı.");
 });
 
-
-server.listen(PORT, "192.168.0.201", () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`http://192.168.0.201:${PORT}`);
 });
