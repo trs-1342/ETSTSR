@@ -35,7 +35,7 @@ export default function ShowUserStatusPage() {
       try {
         // 1) tablestatus
         const statusRes = await fetch(
-          `http://78.188.217.104:2431/api/get-user-permissions/${user.username}`,
+          `http://192.168.0.201:2431/api/get-user-permissions/${user.username}`,
           {
             credentials: "include",
           }
@@ -48,7 +48,7 @@ export default function ShowUserStatusPage() {
         // 2) user_settings (eğer kullanıyorsan)
         // 404 dönerse kullanıcıya ait kaydı yok demektir, ama hata olarak ele almayalım
         const settingsRes = await fetch(
-          `http://78.188.217.104:2431/api/get-user-settings/${user.username}`,
+          `http://192.168.0.201:2431/api/get-user-settings/${user.username}`,
           {
             credentials: "include",
           }
@@ -80,7 +80,7 @@ export default function ShowUserStatusPage() {
   // Çıkış işlemi
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://78.188.217.104:2431/api/logout", {
+      const response = await fetch("http://192.168.0.201:2431/api/logout", {
         method: "POST",
         credentials: "include",
       });
