@@ -25,15 +25,6 @@ app.use(bodyParser.json());
 
 const DB_TABLE_NAME = process.env.DB_TABLE_NAME;
 
-const ALLOWED_ORIGINS = [
-  "http://192.168.0.201",
-  "http://78.188.217.104",
-  "http://192.168.0.201:80",
-  "http://192.168.0.201:2431",
-  "http://78.188.217.104:80",
-  "http://78.188.217.104:2431",
-];
-
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -66,6 +57,12 @@ app.use(
   })
 );
 
+const ALLOWED_ORIGINS = [
+  "http://192.168.0.201",
+  "http://192.168.0.201:80",
+  "http://192.168.0.201:2431",
+];
+
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -91,10 +88,13 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://192.168.0.201:80"); // İstemci adresi
-  res.header("Access-Control-Allow-Credentials", "true"); // Kimlik bilgilerini kabul et
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // İzin verilen HTTP yöntemleri
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // İzin verilen başlıklar
+  const origin = req.headers.origin;
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  }
   next();
 });
 
@@ -334,9 +334,7 @@ app.get("/api-client/qr-sorgula", (req, res) => {
 
       // ✅ Kullanıcı bulunduysa, bilgileri URL parametresi olarak ekleyerek yönlendir
       res.redirect(
-        `http://192.168.0.201:80/client?record=${encodeURIComponent(
-          userRecord
-        )}`
+        `http://192.168.0.201:80/client?record=${encodeURIComponent(userRecord)}`
       );
     } else {
       res.redirect(`http://192.168.0.201:80/`); // ❌ Kullanıcı yoksa anasayfaya yönlendir
@@ -1739,6 +1737,6 @@ app.all(/^\/.*/, (req, res) => {
   res.status(404).send("Sayfa bulunamadı.");
 });
 
-server.listen(PORT, "192.168.0.201", () => {
+server.listen(PORT, () => {
   console.log(`http://192.168.0.201:${PORT}`);
 });

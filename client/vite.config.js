@@ -4,17 +4,20 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: "0.0.0.0",
+    port: 80,
     strictPort: true,
+    cors: {
+      origin: ["http://192.168.0.201", "http://78.188.217.104"],
+      credentials: true,
+    },
+    headers: {
+      "Access-Control-Allow-Origin": "http://192.168.0.201",
+      "Access-Control-Allow-Credentials": "true",
+    },
     watch: {
       usePolling: true,
     },
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-    },
-    host: "0.0.0.0",
-    port: 80, // Port 80'e ayarlandı
-    // port: 1342,
-    cors: true,
   },
   resolve: {
     alias: {
