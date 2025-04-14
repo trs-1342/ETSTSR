@@ -58,6 +58,9 @@ app.use(
 );
 
 const ALLOWED_ORIGINS = [
+  "http://192.168.0.201",
+  "http://192.168.0.201:80",
+  "http://192.168.0.201:2431",
   "http://78.188.217.104",
   "http://78.188.217.104:80",
   "http://78.188.217.104:2431",
@@ -309,12 +312,12 @@ app.get("/api-client/qr-sorgula", (req, res) => {
   const fishNo = req.query.fishNo;
 
   if (!fishNo) {
-    return res.redirect(`http://78.188.217.104:80/`); // ❌ Eğer fishNo yoksa anasayfaya yönlendir
+    return res.redirect(`http://192.168.0.201:80/`); // ❌ Eğer fishNo yoksa anasayfaya yönlendir
   }
 
   if (!DB_TABLE_NAME) {
     console.error("❌ Veritabanı tablo adı `.env` içinde tanımlı değil!");
-    return res.redirect(`http://78.188.217.104:80/`);
+    return res.redirect(`http://192.168.0.201:80/`);
   }
 
   // ✅ SQL Injection'dan korunmak için `db.format()` kullan
@@ -326,7 +329,7 @@ app.get("/api-client/qr-sorgula", (req, res) => {
   db.query(query, (err, results) => {
     if (err) {
       console.error("❌ MySQL Hatası:", err);
-      return res.redirect(`http://78.188.217.104/`);
+      return res.redirect(`http://192.168.0.201/`);
     }
 
     if (results.length > 0) {
@@ -334,10 +337,12 @@ app.get("/api-client/qr-sorgula", (req, res) => {
 
       // ✅ Kullanıcı bulunduysa, bilgileri URL parametresi olarak ekleyerek yönlendir
       res.redirect(
-        `http://78.188.217.104:80/client?record=${encodeURIComponent(userRecord)}`
+        `http://192.168.0.201:80/client?record=${encodeURIComponent(
+          userRecord
+        )}`
       );
     } else {
-      res.redirect(`http://78.188.217.104:80/`); // ❌ Kullanıcı yoksa anasayfaya yönlendir
+      res.redirect(`http://192.168.0.201:80/`); // ❌ Kullanıcı yoksa anasayfaya yönlendir
     }
   });
 });
@@ -470,7 +475,7 @@ app.post("/api/print", async (req, res) => {
       // QR kod oluşturulmasını bekleyin
       await QRCode.toFile(
         qrCodePath,
-        `http://78.188.217.104:2431/api-client/qr-sorgula?fishNo=${fishNo}`,
+        `http://192.168.0.201:2431/api-client/qr-sorgula?fishNo=${fishNo}`,
         { width: 20 }
       );
 
@@ -1394,7 +1399,7 @@ app.get("/api/record/:fishNo", (req, res) => {
     }
 
     // ** eğer istek yetkili istemciden gelmiyorsa mesaj döndür **
-    if (clientIP !== "http://78.188.217.104:80") {
+    if (clientIP !== "http://192.168.0.201:80") {
       return res
         .status(403)
         .json({ message: "Bu verilere erişim izniniz yok." });
@@ -1408,7 +1413,7 @@ app.get("/api/record/:fishNo", (req, res) => {
 app.get("/api/get-all-fishNos", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://78.188.217.104:80") {
+  if (clientIP !== "http://192.168.0.201:80") {
     return res.status(403).json({ message: "Bu verilere erişim izniniz yok." });
   }
 
@@ -1428,7 +1433,7 @@ app.get("/api/get-all-fishNos", (req, res) => {
 app.put("/api/record/:fishNo", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // İstemci IP'sini al
 
-  if (clientIP !== "http://78.188.217.104:80") {
+  if (clientIP !== "http://192.168.0.201:80") {
     return res.status(403).json({ message: "Bu verilere erişim izniniz yok." });
   }
   const { fishNo } = req.params;
@@ -1738,5 +1743,5 @@ app.all(/^\/.*/, (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`http://78.188.217.104:${PORT}`);
+  console.log(`http://192.168.0.201:${PORT}`);
 });
