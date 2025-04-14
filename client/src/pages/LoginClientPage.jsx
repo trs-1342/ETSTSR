@@ -22,7 +22,7 @@ export default function LoginClientPage() {
 
     try {
       const response = await fetch(
-        `http://192.168.0.201:2431/api-client/sorgula/`,
+        `http://78.188.217.104:2431/api-client/sorgula/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

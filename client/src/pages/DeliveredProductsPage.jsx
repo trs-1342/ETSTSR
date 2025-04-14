@@ -45,7 +45,7 @@ export default function DeliveredProductsPage() {
     const fetchUser = async () => {
       try {
         const response = await fetch(
-          "http://192.168.0.201:2431/api/checkAdmin",
+          "http://78.188.217.104:2431/api/checkAdmin",
           {
             credentials: "include",
           }
@@ -70,7 +70,7 @@ export default function DeliveredProductsPage() {
     const fetchTeslimEdilenler = async () => {
       try {
         const response = await fetch(
-          "http://192.168.0.201:2431/api/delivered-products"
+          "http://78.188.217.104:2431/api/delivered-products"
         );
 
         if (!response.ok) {
@@ -302,7 +302,7 @@ export default function DeliveredProductsPage() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://192.168.0.201:2431/api/logout", {
+      const response = await fetch("http://78.188.217.104:2431/api/logout", {
         method: "POST",
         credentials: "include", // Çerezleri gönder
       });
@@ -313,11 +313,11 @@ export default function DeliveredProductsPage() {
       }
 
       // alert("Çıkış başarılı.");
-      window.location.href = "http://192.168.0.201:80/";
+      window.location.href = "http://78.188.217.104:80/";
     } catch (error) {
       console.error("Çıkış hatası:", error.message);
       // alert(`Çıkış Yapıldı, Çıkış hatası: ${error.message}`);
-      window.location.href = "http://192.168.0.201:80/";
+      window.location.href = "http://78.188.217.104:80/";
     }
   };
 

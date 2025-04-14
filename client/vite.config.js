@@ -8,11 +8,11 @@ export default defineConfig({
     port: 80,
     strictPort: true,
     cors: {
-      origin: ["http://192.168.0.201", "http://78.188.217.104"],
+      origin: ["http://78.188.217.104", "http://78.188.217.104"],
       credentials: true,
     },
     headers: {
-      "Access-Control-Allow-Origin": "http://192.168.0.201",
+      "Access-Control-Allow-Origin": "http://78.188.217.104",
       "Access-Control-Allow-Credentials": "true",
     },
     watch: {
