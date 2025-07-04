@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import * as XLSX from "xlsx";
+import * as exceljs from "exceljs";
 import { FaBars, FaTimes, FaArchive } from "react-icons/fa";
 import { IoHome } from "react-icons/io5";
 import { IoMdLogOut } from "react-icons/io";
@@ -45,7 +45,7 @@ export default function DeliveredProductsPage() {
     const fetchUser = async () => {
       try {
         const response = await fetch(
-          "http://192.168.0.201:2431/api/checkAdmin",
+          "http://192.168.1.100:2431/api/checkAdmin",
           {
             credentials: "include",
           }
@@ -70,7 +70,7 @@ export default function DeliveredProductsPage() {
     const fetchTeslimEdilenler = async () => {
       try {
         const response = await fetch(
-          "http://192.168.0.201:2431/api/delivered-products"
+          "http://192.168.1.100:2431/api/delivered-products"
         );
 
         if (!response.ok) {
@@ -166,9 +166,9 @@ export default function DeliveredProductsPage() {
     ]);
 
     // Excel çalışma sayfasını oluştur
-    const worksheet = XLSX.utils.aoa_to_sheet([header, ...rows]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Ürünler");
+    const worksheet = exceljs.utils.aoa_to_sheet([header, ...rows]);
+    const workbook = exceljs.utils.book_new();
+    exceljs.utils.book_append_sheet(workbook, worksheet, "Ürünler");
 
     // Dinamik dosya adı oluştur
     const today = new Date();
@@ -179,10 +179,10 @@ export default function DeliveredProductsPage() {
     ).padStart(2, "0")}:${String(today.getMinutes()).padStart(2, "0")}:${String(
       today.getSeconds()
     ).padStart(2, "0")}`;
-    const fileName = `Ürünler Raporu ${formattedDate}.xlsx`;
+    const fileName = `Ürünler Raporu ${formattedDate}.exceljs`;
 
     // Excel dosyasını indir
-    XLSX.writeFile(workbook, fileName);
+    exceljs.writeFile(workbook, fileName);
   };
 
   // const filteredTeslimEdilenKayitlar = teslimEdilenKayitlar.filter((kayit) => {
@@ -302,7 +302,7 @@ export default function DeliveredProductsPage() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://192.168.0.201:2431/api/logout", {
+      const response = await fetch("http://192.168.1.100:2431/api/logout", {
         method: "POST",
         credentials: "include", // Çerezleri gönder
       });
@@ -313,11 +313,11 @@ export default function DeliveredProductsPage() {
       }
 
       // alert("Çıkış başarılı.");
-      window.location.href = "http://192.168.0.201:80/";
+      window.location.href = "http://192.168.1.100:1342/";
     } catch (error) {
       console.error("Çıkış hatası:", error.message);
       // alert(`Çıkış Yapıldı, Çıkış hatası: ${error.message}`);
-      window.location.href = "http://192.168.0.201:80/";
+      window.location.href = "http://192.168.1.100:1342/";
     }
   };
 
@@ -372,9 +372,9 @@ export default function DeliveredProductsPage() {
     ]);
 
     // Excel dosyasını oluşturma
-    const worksheet = XLSX.utils.aoa_to_sheet([header, ...rows]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Seçilmiş Kayıtlar");
+    const worksheet = exceljs.utils.aoa_to_sheet([header, ...rows]);
+    const workbook = exceljs.utils.book_new();
+    exceljs.utils.book_append_sheet(workbook, worksheet, "Seçilmiş Kayıtlar");
     const today = new Date();
     const formattedDate = `${today.getFullYear()}-${String(
       today.getMonth() + 1
@@ -384,7 +384,7 @@ export default function DeliveredProductsPage() {
       today.getSeconds()
     ).padStart(2, "0")}`;
     // Excel dosyasını indirme
-    XLSX.writeFile(workbook, `seçili kayıtlar ${formattedDate}.xlsx`);
+    exceljs.writeFile(workbook, `seçili kayıtlar ${formattedDate}.exceljs`);
   };
 
   const exportFilteredRecordsToExcel = () => {
@@ -455,9 +455,9 @@ export default function DeliveredProductsPage() {
     ]);
 
     // Excel çalışma sayfasını oluştur
-    const worksheet = XLSX.utils.aoa_to_sheet([header, ...rows]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Ürünler");
+    const worksheet = exceljs.utils.aoa_to_sheet([header, ...rows]);
+    const workbook = exceljs.utils.book_new();
+    exceljs.utils.book_append_sheet(workbook, worksheet, "Ürünler");
 
     // Dinamik dosya adı oluştur
     const today = new Date();
@@ -468,10 +468,10 @@ export default function DeliveredProductsPage() {
     ).padStart(2, "0")}:${String(today.getMinutes()).padStart(2, "0")}:${String(
       today.getSeconds()
     ).padStart(2, "0")}`;
-    const fileName = `Filtreli Ürünler Raporu ${formattedDate}.xlsx`;
+    const fileName = `Filtreli Ürünler Raporu ${formattedDate}.exceljs`;
 
     // Excel dosyasını indir
-    XLSX.writeFile(workbook, fileName);
+    exceljs.writeFile(workbook, fileName);
   };
 
   const handleCheckboxChange = (kayit, event) => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import * as XLSX from "xlsx";
+import * as exceljs from "exceljs";
 import { MdEditSquare } from "react-icons/md";
 import "../css/HomePage.css";
 import usePageAccess from "./usePageAccess";
@@ -58,7 +58,7 @@ export default function HomePage() {
   //   const fetchUser = async () => {
   //     try {
   //       const response = await fetch(
-  //         "http://192.168.0.201:2431/api/checkAdmin",
+  //         "http://192.168.1.100:2431/api/checkAdmin",
   //         {
   //           credentials: "include",
   //         }
@@ -87,7 +87,7 @@ export default function HomePage() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const resp = await fetch("http://192.168.0.201:2431/api/checkAdmin", {
+        const resp = await fetch("http://192.168.1.100:2431/api/checkAdmin", {
           credentials: "include",
         });
         if (resp.status === 401 || resp.status === 403) {
@@ -114,7 +114,7 @@ export default function HomePage() {
     if (!isAuthorized) return; // Henüz yetki verisi alınmadıysa fetch atma
     const fetchRecords = async () => {
       try {
-        const response = await fetch("http://192.168.0.201:2431/api/records", {
+        const response = await fetch("http://192.168.1.100:2431/api/records", {
           credentials: "include",
         });
         if (response.status === 401 || response.status === 403) {
@@ -146,7 +146,7 @@ export default function HomePage() {
   // useEffect(() => {
   //   const fetchRecords = async () => {
   //     try {
-  //       const response = await fetch("http://192.168.0.201:2431/api/records", {
+  //       const response = await fetch("http://192.168.1.100:2431/api/records", {
   //         credentials: "include",
   //       });
   //       if (!response.ok) throw new Error("Yetkisiz erişim!");
@@ -343,10 +343,10 @@ export default function HomePage() {
       row.Durum,
     ]);
 
-    const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Tüm Kayıtlar");
-    XLSX.writeFile(wb, "tüm kayıtlar.xlsx");
+    const ws = exceljs.utils.aoa_to_sheet([header, ...rows]);
+    const wb = exceljs.utils.book_new();
+    exceljs.utils.book_append_sheet(wb, ws, "Tüm Kayıtlar");
+    exceljs.writeFile(wb, "tüm kayıtlar.exceljs");
   };
 
   const exportFilteredRecordsToExcel = () => {
@@ -463,12 +463,12 @@ export default function HomePage() {
     }
 
     // Excel dosyasını oluşturuyoruz
-    const worksheet = XLSX.utils.aoa_to_sheet([header, ...rows]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Kayıtlar");
+    const worksheet = exceljs.utils.aoa_to_sheet([header, ...rows]);
+    const workbook = exceljs.utils.book_new();
+    exceljs.utils.book_append_sheet(workbook, worksheet, "Kayıtlar");
 
     // Excel dosyasını indir
-    XLSX.writeFile(workbook, "filterli kayıtlar.xlsx");
+    exceljs.writeFile(workbook, "filterli kayıtlar.exceljs");
   };
 
   let selectedRecords = [];
@@ -538,18 +538,18 @@ export default function HomePage() {
     ]);
 
     // Excel dosyasını oluşturma
-    const worksheet = XLSX.utils.aoa_to_sheet([header, ...rows]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Seçilmiş Kayıtlar");
+    const worksheet = exceljs.utils.aoa_to_sheet([header, ...rows]);
+    const workbook = exceljs.utils.book_new();
+    exceljs.utils.book_append_sheet(workbook, worksheet, "Seçilmiş Kayıtlar");
 
     // Excel dosyasını indirme
-    XLSX.writeFile(workbook, "seçili kayıtlar.xlsx");
+    exceljs.writeFile(workbook, "seçili kayıtlar.exceljs");
   };
 
   const handleLogout = async () => {
     try {
       // Backend'e çıkış işlemi için istek gönder
-      const response = await fetch("http://192.168.0.201:2431/api/logout", {
+      const response = await fetch("http://192.168.1.100:2431/api/logout", {
         method: "POST",
         credentials: "include", // Çerezleri gönder
       });
@@ -579,12 +579,12 @@ export default function HomePage() {
 
   return (
     <>
-      <img
+      {/* <img
         src="/enigma-logo.svg"
         alt="enigma-logo"
         width="300"
         style={{ userSelect: "none", pointerEvents: "none" }}
-      />
+      /> */}
       <ToolsPanel
         isAuthorized={isAuthorized}
         userRole={userRole}
@@ -606,8 +606,7 @@ export default function HomePage() {
         selectedRecords={selectedRecords}
         setSelectedRecords={exportSelectedRecordsToExcel}
       />
-      <div style={{ position: "relative" }}>
-        {/* Sunucu yeniden başlatıldığında (ya da oturum bozulduğunda) göstereceğimiz alert */}
+      {/*<div style={{ position: "relative" }}>
         {serverRestarted && (
           <div
             className="alert alert-danger w-50"
@@ -624,7 +623,7 @@ export default function HomePage() {
             git
           </div>
         )}
-      </div>
+      </div>*/}
       <div className="table mt-1">
         {filteredResults.length > 0 ? (
           <table
