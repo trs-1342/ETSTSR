@@ -16,7 +16,7 @@ export default function usePageAccess(pageName) {
             }
 
             try {
-                const response = await fetch("http://192.168.1.100:2431/api/check-page-access", {
+                const response = await fetch("http://127.0.0.1:2431/api/check-page-access", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username: user.username, page: pageName }),

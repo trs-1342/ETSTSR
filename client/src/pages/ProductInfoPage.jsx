@@ -5,7 +5,7 @@ import "../css/ProductInfo.css";
 
 export default function ProductInfo() {
   const navigate = useNavigate();
-  const { fishNo } = useParams();
+  const { FishNo } = useParams();
 
   const [kayit, setKayit] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,8 +27,9 @@ export default function ProductInfo() {
     const fetchUser = async () => {
       try {
         const response = await fetch(
-          "http://192.168.1.100:2431/api/checkAdmin",
+          "http://127.0.0.1:2431/api/checkAdmin",
           {
+            method: "GET",
             credentials: "include",
           }
         );
@@ -53,8 +54,8 @@ export default function ProductInfo() {
     const fetchKayit = async () => {
       try {
         const response = await fetch(
-          `http://192.168.1.100:2431/api/getInfoProd/${fishNo}`,
-          { credentials: "include" }
+          `http://127.0.0.1:2431/api/getInfoProd/${FishNo}`,
+          { method: "GET", credentials: "include" }
         );
 
         if (!response.ok) {
@@ -75,12 +76,12 @@ export default function ProductInfo() {
     };
 
     fetchKayit();
-  }, [fishNo]);
+  }, [FishNo]);
 
   useEffect(() => {
     const fetchPrinters = async () => {
       try {
-        const response = await fetch("http://192.168.1.100:2431/api/printers");
+        const response = await fetch("http://127.0.0.1:2431/api/printers");
         if (!response.ok) {
           throw new Error(`Sunucu hatası: ${response.status}`);
         }
@@ -126,7 +127,7 @@ export default function ProductInfo() {
     if (!selectedPrinter) return alert("Lütfen bir yazıcı seçin!");
 
     const printData = {
-      fishNo: kayit.fishNo,
+      FishNo: kayit.FishNo,
       AdSoyad: kayit.AdSoyad,
       data: btoa(unescape(encodeURIComponent(JSON.stringify(kayit, null, 2)))),
       printerName: selectedPrinter,
@@ -149,7 +150,7 @@ tercih etmemeniz halinde 500 tl arıza tespit ücreti ödemeniz gerekecektir.`,
     };
 
     try {
-      const response = await fetch("http://192.168.1.100:2431/api/print", {
+      const response = await fetch("http://127.0.0.1:2431/api/print", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(printData),
@@ -208,7 +209,7 @@ tercih etmemeniz halinde 500 tl arıza tespit ücreti ödemeniz gerekecektir.`,
             <tbody>
               <tr>
                 <th>Fiş No</th>
-                <td>{kayit.fishNo}</td>
+                <td>{kayit.FishNo}</td>
               </tr>
               <tr>
                 <th>Ad Soyad</th>
@@ -291,7 +292,7 @@ tercih etmemeniz halinde 500 tl arıza tespit ücreti ödemeniz gerekecektir.`,
           <button
             onClick={async () => {
               const response = await fetch(
-                "http://192.168.1.100:2431/api/client-printers"
+                "http://127.0.0.1:2431/api/client-printers"
               );
               const printers = await response.json();
               console.log("İstemcideki Yazıcılar:", printers);
@@ -304,7 +305,8 @@ tercih etmemeniz halinde 500 tl arıza tespit ücreti ödemeniz gerekecektir.`,
             <div className="text-center">
               <button
                 className="btn btn-warning mx-2"
-                onClick={() => navigate(`/record/${kayit.fishNo}`)}
+                // onClick={() => navigate(`/record/${kayit.FishNo}`)}
+                onClick={() => kayit && navigate(`/record/${FishNo}`)}
               >
                 Düzenle
               </button>
@@ -317,7 +319,7 @@ tercih etmemeniz halinde 500 tl arıza tespit ücreti ödemeniz gerekecektir.`,
                   if (confirmDelete) {
                     try {
                       const response = await fetch(
-                        `http://192.168.1.100:2431/api/deleteProduct/${kayit.fishNo}`,
+                        `http://127.0.0.1:2431/api/deleteProduct/${FishNo}`,
                         {
                           method: "DELETE",
                           credentials: "include",

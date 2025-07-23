@@ -17,8 +17,8 @@ export default function YouCantSee() {
 
         const fetchValidFishNos = async () => {
             try {
-                const response = await axios.get(`http://192.168.1.100:2431/api/get-all-fishNos`);
-                setValidFishNos(response.data); // Tüm fishNo değerlerini al
+                const response = await axios.get(`http://127.0.0.1:2431/api/get-all-fishNos`);
+                setValidFishNos(response.data); // Tüm FishNo değerlerini al
             } catch (error) {
                 console.error("FishNo verileri çekilirken hata oluştu:", error);
             }
@@ -29,10 +29,10 @@ export default function YouCantSee() {
 
     // useEffect(() => {
     //     const currentPath = window.location.pathname;
-    //     const fishNoMatch = currentPath.match(/\/product-info\/(\d+)/); // `/product-info/:fishNo` yakalar
+    //     const fishNoMatch = currentPath.match(/\/product-info\/(\d+)/); // `/product-info/:FishNo` yakalar
 
     //     if (fishNoMatch && validFishNos.includes(parseInt(fishNoMatch[1]))) {
-    //         setRedirectLink(currentPath); // Eğer geçerli bir fishNo varsa yönlendirme yapma
+    //         setRedirectLink(currentPath); // Eğer geçerli bir FishNo varsa yönlendirme yapma
     //     } else {
     //         // Kullanıcının yetkili olduğu sayfaya yönlendirme yap
     //         const pageRoutes = {
@@ -47,7 +47,7 @@ export default function YouCantSee() {
     const handleLogout = async () => {
         try {
             // Backend'e çıkış işlemi için istek gönder
-            const response = await fetch("http://192.168.1.100:2431/api/logout", {
+            const response = await fetch("http://127.0.0.1:2431/api/logout", {
                 method: "POST",
                 credentials: "include", // Çerezleri gönder
             });

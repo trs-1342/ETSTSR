@@ -68,7 +68,7 @@ function AppContent() {
 
     // Admin değilse, tablestatus'tan yetkileri çek
     fetch(
-      `http://192.168.1.100:2431/api/get-user-permissions/${user.username}`,
+      `http://127.0.0.1:2431/api/get-user-permissions/${user.username}`,
       {
         credentials: "include", // session cookie
       }
@@ -176,20 +176,20 @@ function AppContent() {
 
       {/* ProductInfoPage */}
       {canAccess("ProductInfoPage") ? (
-        <Route path="/product-info/:fishNo" element={<ProductInfoPage />} />
+        <Route path="/product-info/:FishNo" element={<ProductInfoPage />} />
       ) : (
         <Route
-          path="/product-info/:fishNo"
+          path="/product-info/:FishNo"
           element={<Navigate to="/you-cant-see" />}
         />
       )}
 
       {/* RecordFormPage */}
       {canAccess("RecordFormPage") ? (
-        <Route path="/record/:fishNo" element={<RecordFormPage />} />
+        <Route path="/record/:FishNo" element={<RecordFormPage />} />
       ) : (
         <Route
-          path="/record/:fishNo"
+          path="/record/:FishNo"
           element={<Navigate to="/you-cant-see" />}
         />
       )}

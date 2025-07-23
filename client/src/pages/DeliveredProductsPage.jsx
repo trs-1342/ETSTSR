@@ -45,7 +45,7 @@ export default function DeliveredProductsPage() {
     const fetchUser = async () => {
       try {
         const response = await fetch(
-          "http://192.168.1.100:2431/api/checkAdmin",
+          "http://127.0.0.1:2431/api/checkAdmin",
           {
             credentials: "include",
           }
@@ -70,7 +70,7 @@ export default function DeliveredProductsPage() {
     const fetchTeslimEdilenler = async () => {
       try {
         const response = await fetch(
-          "http://192.168.1.100:2431/api/delivered-products"
+          "http://127.0.0.1:2431/api/delivered-products"
         );
 
         if (!response.ok) {
@@ -121,7 +121,7 @@ export default function DeliveredProductsPage() {
 
     // Verileri tablo formatına dönüştür
     const rows = teslimEdilenKayitlar.map((row) => [
-      row.fishNo || "Bilinmiyor",
+      row.FishNo || "Bilinmiyor",
       row.AdSoyad || "Bilinmiyor",
       formatTarihVeSaat(row.TeslimAlmaTarihi) || "Bilinmiyor",
       row.TelNo || "Bilinmiyor",
@@ -302,7 +302,7 @@ export default function DeliveredProductsPage() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://192.168.1.100:2431/api/logout", {
+      const response = await fetch("http://127.0.0.1:2431/api/logout", {
         method: "POST",
         credentials: "include", // Çerezleri gönder
       });
@@ -313,11 +313,11 @@ export default function DeliveredProductsPage() {
       }
 
       // alert("Çıkış başarılı.");
-      window.location.href = "http://192.168.1.100:1342/";
+      window.location.href = "http://127.0.0.1:1342/";
     } catch (error) {
       console.error("Çıkış hatası:", error.message);
       // alert(`Çıkış Yapıldı, Çıkış hatası: ${error.message}`);
-      window.location.href = "http://192.168.1.100:1342/";
+      window.location.href = "http://127.0.0.1:1342/";
     }
   };
 
@@ -352,7 +352,7 @@ export default function DeliveredProductsPage() {
 
     // Satırlar (seçilen ürünler)
     const rows = selectedRecords.map((record) => [
-      record.fishNo,
+      record.FishNo,
       record.AdSoyad,
       record.TeslimAlmaTarihi,
       record.TelNo,
@@ -410,7 +410,7 @@ export default function DeliveredProductsPage() {
 
     // Filtrelenmiş verileri tablo formatına dönüştür
     const rows = filteredTeslimEdilenKayitlar.map((row) => [
-      row.fishNo || "Bilinmiyor",
+      row.FishNo || "Bilinmiyor",
       row.AdSoyad || "Bilinmiyor",
       formatTarihVeSaat(row.TeslimAlmaTarihi) || "Bilinmiyor",
       row.TelNo || "Bilinmiyor",
@@ -481,7 +481,7 @@ export default function DeliveredProductsPage() {
     } else {
       // Checkbox seçilmediyse kaydı diziden çıkar
       selectedRecords = selectedRecords.filter(
-        (item) => item.fishNo !== kayit.fishNo
+        (item) => item.FishNo !== kayit.FishNo
       );
     }
   };
@@ -651,7 +651,7 @@ export default function DeliveredProductsPage() {
           <thead>
             <tr style={{ backgroundColor: "#bdbdbd" }}>
               {[
-                { key: "fishNo", label: "Fis No" },
+                { key: "FishNo", label: "Fis No" },
                 { key: "AdSoyad", label: "Ad Soyad" },
                 { key: "TeslimAlmaTarihi", label: "Teslim Alma Tarihi" },
                 { key: "TelNo", label: "TelNo" },
@@ -686,15 +686,15 @@ export default function DeliveredProductsPage() {
           <tbody>
             {filteredTeslimEdilenKayitlar.length > 0 ? (
               filteredTeslimEdilenKayitlar.map((kayit, index) => (
-                <tr key={kayit.fishNo || `record-${index}`}>
+                <tr key={kayit.FishNo || `record-${index}`}>
                   <td>
                     <a
                       className="btn btn-sm btn-secondary d-block mb-2 fs-3"
-                      href={`/product-info/${kayit.fishNo || index}`}
+                      href={`/product-info/${kayit.FishNo || index}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {kayit.fishNo}
+                      {kayit.FishNo}
                     </a>
                     <span className="glyphicon d-block mb-2">
                       #{idInListe++}
@@ -702,7 +702,7 @@ export default function DeliveredProductsPage() {
                     <input
                       type="checkbox"
                       name="selected-product"
-                      id={`selected-product-${kayit.fishNo}`}
+                      id={`selected-product-${kayit.FishNo}`}
                       onChange={(e) => handleCheckboxChange(kayit, e)}
                       className="form-check-input custom-checkbox"
                       style={{ width: "20px", height: "20px" }}
@@ -855,7 +855,7 @@ export default function DeliveredProductsPage() {
                     {kayit.Durum}
                     {isAuthorized && userRole === "admin" ? (
                       <button
-                        onClick={() => navigate(`/record/${kayit.fishNo}`)}
+                        onClick={() => navigate(`/record/${kayit.FishNo}`)}
                         className="duzenle-btn"
                       >
                         <MdEditSquare />

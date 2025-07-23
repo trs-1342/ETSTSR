@@ -42,52 +42,28 @@ export default function HomePage() {
   const [userData, setUserData] = useState(null);
   const [sessionLost, setSessionLost] = useState(false); // Alert için state
 
+  if (!userRole) {
+    <></>;
+  }
+
   useEffect(() => {
     // Hem çerez hem de localStorage kontrolü
     const userInLocalStorage = localStorage.getItem("user");
     const cookies = document.cookie;
 
-    // Eğer localStorage'da "user" yoksa VE çerez de yoksa
-    // direkt login sayfasına yönlendir
     if (!userInLocalStorage && !cookies) {
       navigate("/login");
     }
   }, [navigate]);
 
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "http://192.168.1.100:2431/api/checkAdmin",
-  //         {
-  //           credentials: "include",
-  //         }
-  //       );
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         setIsAuthorized(data.isAuthorized);
-  //         setUserRole(data.role);
-  //         setUserId(data.username); // Assuming the username is used as userId
-  //         // console.log(data);
-  //       } else {
-  //         console.error("Yetki kontrolü başarısız");
-  //       }
-  //     } catch (error) {
-  //       console.error("Yetki kontrolünde hata:", error.message);
-  //     }
-  //   };
-
-  //   fetchUser();
-  // }, []);
-
-  // Bu state true olduğunda "Sunucu yeniden başlatıldı" şeklinde sağ üstte uyarı göstereceğiz
   const [serverRestarted, setServerRestarted] = useState(false);
 
   // 1) Oturum ve yetki bilgisini kontrol et
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const resp = await fetch("http://192.168.1.100:2431/api/checkAdmin", {
+        const resp = await fetch("http://127.0.0.1:2431/api/checkAdmin", {
+          method: "GET",
           credentials: "include",
         });
         if (resp.status === 401 || resp.status === 403) {
@@ -100,7 +76,7 @@ export default function HomePage() {
         }
         const data = await resp.json();
         setIsAuthorized(data.isAuthorized);
-        setUserRole(data.role); // <-- BU SATIRI EKLEYİN
+        setUserRole(data.role);
       } catch (error) {
         console.error("Oturum kontrol hatası:", error);
         setServerRestarted(true);
@@ -111,10 +87,11 @@ export default function HomePage() {
 
   // 2) Kayıtları çek
   useEffect(() => {
-    if (!isAuthorized) return; // Henüz yetki verisi alınmadıysa fetch atma
+    if (!isAuthorized) return;
     const fetchRecords = async () => {
       try {
-        const response = await fetch("http://192.168.1.100:2431/api/records", {
+        const response = await fetch("http://127.0.0.1:2431/api/records", {
+          method: "GET",
           credentials: "include",
         });
         if (response.status === 401 || response.status === 403) {
@@ -142,38 +119,6 @@ export default function HomePage() {
     };
     fetchRecords();
   }, [isAuthorized]);
-
-  // useEffect(() => {
-  //   const fetchRecords = async () => {
-  //     try {
-  //       const response = await fetch("http://192.168.1.100:2431/api/records", {
-  //         credentials: "include",
-  //       });
-  //       if (!response.ok) throw new Error("Yetkisiz erişim!");
-
-  //       const data = await response.json();
-
-  //       // API'den gelen verileri teslim alma tarihine göre sıralayarak setKayitlar'a aktarıyor
-  //       const sortedData = [...data.data].sort((a, b) => {
-  //         if (!a.TeslimAlmaTarihi) return 1;
-  //         if (!b.TeslimAlmaTarihi) return -1;
-
-  //         const dateA = parseDateString(a.TeslimAlmaTarihi);
-  //         const dateB = parseDateString(b.TeslimAlmaTarihi);
-  //         if (!dateA) return 1;
-  //         if (!dateB) return -1;
-
-  //         return dateB - dateA; // En yeni en üste olacak şekilde sıralama
-  //       });
-
-  //       setKayitlar(sortedData);
-  //     } catch (error) {
-  //       console.error("Kayıtları getirirken hata:", error.message);
-  //     }
-  //   };
-
-  //   fetchRecords();
-  // }, [isAuthorized]); // API cagrisi tamamlandıktan sonra calisir.
 
   const handleSearch = (e) => {
     const term = e.target.value.toLowerCase();
@@ -229,13 +174,10 @@ export default function HomePage() {
     const [day, month, year] = datePart.split("/").map(Number);
     const [hour, minute] = timePart.split(":").map(Number);
 
-    // new Date(yıl, ayIndex, gün, saat, dakika)
-    // Dikkat: JavaScript'te ay 0-index'li (0 = Ocak, 1 = Şubat...)
     return new Date(year, month - 1, day, hour, minute);
   }
 
   useEffect(() => {
-    // varsayılani "TeslimAlmaTarihi"ne gore desc olarak ayarla
     setSortConfig({ key: "TeslimAlmaTarihi", direction: "desc" });
 
     // kayitlari yeniden duzenle
@@ -248,7 +190,6 @@ export default function HomePage() {
       if (!dateA) return 1;
       if (!dateB) return -1;
 
-      // desc: yeni tarih once gelsin
       return dateB - dateA;
     });
     setKayitlar(sorted);
@@ -257,7 +198,6 @@ export default function HomePage() {
   const sortData = (key) => {
     let direction = "asc";
 
-    // sutuna tiklanmissa, siralamayi sifirla ve "asc" ile baslat
     if (sortConfig.key !== key) {
       direction = "asc";
     } else {
@@ -323,7 +263,7 @@ export default function HomePage() {
     ];
 
     const rows = filteredKayitlar.map((row) => [
-      row.fishNo,
+      row.FishNo,
       row.AdSoyad,
       row.TeslimAlmaTarihi,
       row.TelNo,
@@ -411,7 +351,7 @@ export default function HomePage() {
         "Seri No",
       ];
       rows = filteredRecords.map((row) => [
-        row.fishNo,
+        row.FishNo,
         row.AdSoyad,
         row.GarantiDurumu,
         row.Urun,
@@ -441,7 +381,7 @@ export default function HomePage() {
         "Durum",
       ];
       rows = filteredRecords.map((row) => [
-        row.fishNo,
+        row.FishNo,
         row.AdSoyad,
         row.TeslimAlmaTarihi,
         row.TelNo,
@@ -481,7 +421,7 @@ export default function HomePage() {
     } else {
       // Checkbox seçilmediyse kaydı diziden çıkar
       selectedRecords = selectedRecords.filter(
-        (item) => item.fishNo !== record.fishNo
+        (item) => item.FishNo !== record.FishNo
       );
     }
   };
@@ -517,7 +457,7 @@ export default function HomePage() {
 
     // Satırlar (seçilen ürünler)
     const rows = selectedRecords.map((record) => [
-      record.fishNo,
+      record.FishNo,
       record.AdSoyad,
       record.TeslimAlmaTarihi,
       record.TelNo,
@@ -549,7 +489,7 @@ export default function HomePage() {
   const handleLogout = async () => {
     try {
       // Backend'e çıkış işlemi için istek gönder
-      const response = await fetch("http://192.168.1.100:2431/api/logout", {
+      const response = await fetch("http://127.0.0.1:2431/api/logout", {
         method: "POST",
         credentials: "include", // Çerezleri gönder
       });
@@ -635,7 +575,7 @@ export default function HomePage() {
             <thead>
               <tr style={{ backgroundColor: "#bdbdbd" }}>
                 {[
-                  { key: "fishNo", label: "Fis No" },
+                  { key: "FishNo", label: "Fis No" },
                   { key: "AdSoyad", label: "Ad Soyad" },
                   { key: "TeslimAlmaTarihi", label: "Teslim Alma Tarihi" },
                   { key: "TelNo", label: "TelNo" },
@@ -671,15 +611,17 @@ export default function HomePage() {
               {filteredResults
                 .filter((recordS) => recordS.Durum !== "Teslim Edildi")
                 .map((recordS, index) => (
-                  <tr key={recordS.fishNo || `recordS-${index}`}>
+                  <tr key={recordS.FishNo || `recordS-${index}`}>
                     <td>
                       <a
                         className="btn btn-sm btn-secondary d-block mb-2 fs-3"
-                        href={`/product-info/${recordS.fishNo || index}`}
+                        href={`/product-info/${
+                          recordS.FishNo - 1 || index - 1
+                        }`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {recordS.fishNo}
+                        {recordS.FishNo}
                       </a>
                       <span className="glyphicon d-block mb-2">
                         #{idInListe++}
@@ -687,7 +629,7 @@ export default function HomePage() {
                       <input
                         type="checkbox"
                         name="selected-product"
-                        id={`selected-product-${recordS.fishNo}`}
+                        id={`selected-product-${recordS.FishNo}`}
                         onChange={(e) => handleCheckboxChange(recordS, e)}
                         className="form-check-input"
                         style={{ width: "20px", height: "20px" }}
@@ -832,7 +774,7 @@ export default function HomePage() {
             <thead className="thead-dark">
               <tr>
                 {[
-                  { key: "fishNo", label: "Fis No" },
+                  { key: "FishNo", label: "Fis No" },
                   { key: "AdSoyad", label: "Ad Soyad" },
                   { key: "TeslimAlmaTarihi", label: "Teslim Alma Tarihi" },
                   { key: "TelNo", label: "TelNo" },
@@ -869,20 +811,20 @@ export default function HomePage() {
                 filtrelenmisKayitlar
                   .filter((record) => record.Durum !== "Teslim Edildi")
                   .map((record, index) => (
-                    <tr key={record.fishNo || `record-${index}`}>
+                    <tr key={record.FishNo || `record-${index}`}>
                       <td>
                         <a
-                          href={`/product-info/${record.fishNo || index}`}
+                          href={`/product-info/${record.FishNo || index}`}
                           target="_blank"
                           className="btn btn-sm btn-secondary text-start w-100"
                         >
-                          {record.fishNo}# | {idInListe++}
+                          {record.FishNo}# | {idInListe++}
                         </a>
                         <span className="glyphicon d-block mb-2"></span>
                         <input
                           type="checkbox"
                           name="selected-product"
-                          id={`selected-product-${record.fishNo}`}
+                          id={`selected-product-${record.FishNo}`}
                           onChange={(e) => handleCheckboxChange(record, e)}
                           className="form-check-input custom-checkbox"
                           style={{ width: "20px", height: "20px" }}
@@ -994,7 +936,7 @@ export default function HomePage() {
                         </span>
                         {isAuthorized && userRole === "admin" ? (
                           <button
-                            onClick={() => navigate(`/record/${record.fishNo}`)}
+                            onClick={() => navigate(`/record/${record.FishNo}`)}
                             className="duzenle-btn"
                           >
                             <MdEditSquare />

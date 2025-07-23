@@ -12,7 +12,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://192.168.1.100:2431/api/get-users-data");
+        const response = await fetch("http://127.0.0.1:2431/api/get-users-data");
         if (!response.ok) throw new Error("Kullanıcı listesi alınamadı!");
 
         const data = await response.json();
@@ -31,7 +31,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch("http://192.168.1.100:2431/api/checkAdmin", {
+        const response = await fetch("http://127.0.0.1:2431/api/checkAdmin", {
           credentials: "include",
         });
         if (!response.ok) throw new Error("Yetki kontrolü başarısız!");
@@ -52,7 +52,7 @@ export default function SettingsPage() {
     if (!window.confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) return;
 
     try {
-      const response = await fetch(`http://192.168.1.100:2431/api/delete-user/${userId}`, {
+      const response = await fetch(`http://127.0.0.1:2431/api/delete-user/${userId}`, {
         method: "DELETE",
       });
 
@@ -92,7 +92,7 @@ export default function SettingsPage() {
   const handleLogout = async () => {
     try {
       // Backend'e çıkış işlemi için istek gönder
-      const response = await fetch("http://192.168.1.100:2431/api/logout", {
+      const response = await fetch("http://127.0.0.1:2431/api/logout", {
         method: "POST",
         credentials: "include", // Çerezleri gönder
       });
@@ -134,7 +134,7 @@ export default function SettingsPage() {
                   </h5>
                   <p className="card-text"><strong>Email:</strong> {user.email}</p>
                   <p className="card-text"><strong>Rol:</strong> {user.role}</p>
-                  <p className="card-text">{new Date(user.created_at).toLocaleDateString()}</p>
+                  <p className="card-text">{new Date(user.createdAt).toLocaleDateString()}</p>
                   {
                     (!isAuthorized || (userRole !== "admin" && userRole !== "personel")) ? (
                       // <p className="card-text text-danger">Bu kullanıcıyı düzenleme yetkiniz yok!</p>

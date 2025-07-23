@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function LoginClientPage() {
   const [adSoyad, setAdSoyad] = useState("");
-  const [fishNo, setFishNo] = useState("");
+  const [FishNo, setFishNo] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
   //   const HOST = process.env.API_HOST;
@@ -22,11 +22,11 @@ export default function LoginClientPage() {
 
     try {
       const response = await fetch(
-        `http://192.168.1.100:2431/api-client/sorgula/`,
+        `http://127.0.0.1:2431/api-client/sorgula/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ adSoyad, fishNo }),
+          body: JSON.stringify({ adSoyad, FishNo }),
         }
       );
 
@@ -73,7 +73,7 @@ export default function LoginClientPage() {
               type="text"
               className="form-control"
               placeholder="Fish numaranızı girin"
-              value={fishNo}
+              value={FishNo}
               onChange={(e) => setFishNo(e.target.value)}
             />
           </div>

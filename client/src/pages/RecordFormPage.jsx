@@ -21,7 +21,7 @@ function formatTarihVeSaat(tarih) {
 }
 
 export default function EditPage() {
-  const { fishNo } = useParams();
+  const { FishNo } = useParams();
   const navigate = useNavigate();
 
   const [kayit, setKayit] = useState(null);
@@ -45,8 +45,9 @@ export default function EditPage() {
     const fetchUser = async () => {
       try {
         const response = await fetch(
-          "http://192.168.1.100:2431/api/checkAdmin",
+          "http://127.0.0.1:2431/api/checkAdmin",
           {
+            method: "GET",
             credentials: "include",
           }
         );
@@ -68,12 +69,15 @@ export default function EditPage() {
   // 2) Fiş Kaydı Verisini Sunucudan Çek
   // --------------------------------
   useEffect(() => {
-    if (!fishNo) {
+    if (!FishNo) {
       setHata("Fiş numarası bulunamadı.");
       return;
     }
 
-    fetch(`http://192.168.1.100:2431/api/record/${fishNo}`)
+    fetch(`http://127.0.0.1:2431/api/record/${FishNo}`, {
+      method: "GET",
+      credentials: "include",
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP hata kodu: ${response.status}`);
@@ -106,7 +110,7 @@ export default function EditPage() {
         setHata(`Veri çekme hatası: ${error.message}`);
         console.error("Veri çekme hatası:", error);
       });
-  }, [fishNo]);
+  }, [FishNo]);
 
   // -------------------------------------
   // 3) Net Ücret veya KDV Değişince Toplamı Hesapla
@@ -187,7 +191,7 @@ export default function EditPage() {
       })
     );
 
-    fetch(`http://192.168.1.100:2431/api/record/${fishNo}`, {
+    fetch(`http://127.0.0.1:2431/api/record/${FishNo}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(temizKayit),
@@ -234,7 +238,7 @@ export default function EditPage() {
     <div className="container mt-1">
       <h1 className="text-center mb-4">Fiş Düzenleme</h1>
       <h4 className="text-center mb-2">
-        <strong>Fiş No: {kayit.fishNo}</strong>
+        <strong>Fiş No: {kayit.FishNo}</strong>
       </h4>
 
       <form className="row g-3 col-md-12">

@@ -53,7 +53,7 @@ export default function ClientPage() {
       const imgWidth = 210;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       pdf.addImage(imgData, "PNG", 0, 10, imgWidth, imgHeight);
-      pdf.save(`${record?.fishNo || ""}-${record?.AdSoyad || "record"}.pdf`);
+      pdf.save(`${record?.FishNo || ""}-${record?.AdSoyad || "record"}.pdf`);
 
       // PDF oluşturulduktan sonra butonları geri göster
       buttons.style.display = "flex";
@@ -67,7 +67,7 @@ export default function ClientPage() {
       {record ? (
         <div className="card p-4 shadow">
           <p>
-            <strong>Fish No:</strong> {record.fishNo}
+            <strong>Fish No:</strong> {record.FishNo}
           </p>
           <p>
             <strong>Ad Soyad:</strong> {record.AdSoyad}

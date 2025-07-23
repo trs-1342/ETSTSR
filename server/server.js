@@ -29,7 +29,7 @@ const db = mysql.createConnection({
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "ETSTSR",
+  database: process.env.DB_NAME || "SP",
   port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306,
 });
 
@@ -58,12 +58,12 @@ app.use(
 );
 
 const ALLOWED_ORIGINS = [
-  "http://192.168.1.100",
-  "http://192.168.1.100:80",
-  "http://192.168.1.100:2431",
-  "http://192.168.1.100",
-  "http://192.168.1.100:80",
-  "http://192.168.1.100:2431",
+  "http://127.0.0.1",
+  "http://127.0.0.1:80",
+  "http://127.0.0.1:2431",
+  "http://127.0.0.1",
+  "http://127.0.0.1:80",
+  "http://127.0.0.1:2431",
 ];
 
 app.use(
@@ -193,11 +193,11 @@ wss.on("connection", (ws, req) => {
 });
 
 function authMiddleware(req, res, next) {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
 
   if (!req.session || !req.session.user) {
     return res.status(401).json({ message: "Unauthorized access!" });
@@ -240,9 +240,9 @@ app.use(
 );
 
 app.post("/api-client/sorgula", (req, res) => {
-  const { adSoyad, fishNo } = req.body;
+  const { adSoyad, FishNo } = req.body;
 
-  if (!adSoyad || !fishNo) {
+  if (!adSoyad || !FishNo) {
     return res.status(400).json({ error: "Ad Soyad ve Fish No gerekli!" });
   }
 
@@ -254,10 +254,10 @@ app.post("/api-client/sorgula", (req, res) => {
   }
 
   // ✅ SQL Injection'dan korunmak için `db.format()` kullan
-  const query = db.format(`SELECT * FROM ?? WHERE AdSoyad = ? AND fishNo = ?`, [
+  const query = db.format(`SELECT * FROM ?? WHERE AdSoyad = ? AND FishNo = ?`, [
     DB_TABLE_NAME,
     adSoyad,
-    fishNo,
+    FishNo,
   ]);
 
   db.query(query, (err, results) => {
@@ -275,9 +275,9 @@ app.post("/api-client/sorgula", (req, res) => {
 });
 
 app.post("/api-client/sorgula-qr", (req, res) => {
-  const { fishNo } = req.body;
+  const { FishNo } = req.body;
 
-  if (!fishNo) {
+  if (!FishNo) {
     return res.status(400).json({ error: "Fish No gerekli!" });
   }
 
@@ -289,9 +289,9 @@ app.post("/api-client/sorgula-qr", (req, res) => {
   }
 
   // ✅ SQL Injection'dan korunmak için `db.format()` kullan
-  const query = db.format(`SELECT * FROM ?? WHERE fishNo = ?`, [
+  const query = db.format(`SELECT * FROM ?? WHERE FishNo = ?`, [
     DB_TABLE_NAME,
-    fishNo,
+    FishNo,
   ]);
 
   db.query(query, (err, results) => {
@@ -309,10 +309,10 @@ app.post("/api-client/sorgula-qr", (req, res) => {
 });
 
 app.get("/api-client/qr-sorgula", (req, res) => {
-  const fishNo = req.query.fishNo;
+  const FishNo = req.query.FishNo;
 
-  if (!fishNo) {
-    return res.redirect(`http://192.168.1.151:80/`); // ❌ Eğer fishNo yoksa anasayfaya yönlendir
+  if (!FishNo) {
+    return res.redirect(`http://192.168.1.151:80/`); // ❌ Eğer FishNo yoksa anasayfaya yönlendir
   }
 
   if (!DB_TABLE_NAME) {
@@ -321,9 +321,9 @@ app.get("/api-client/qr-sorgula", (req, res) => {
   }
 
   // ✅ SQL Injection'dan korunmak için `db.format()` kullan
-  const query = db.format(`SELECT * FROM ?? WHERE fishNo = ?`, [
+  const query = db.format(`SELECT * FROM ?? WHERE FishNo = ?`, [
     DB_TABLE_NAME,
-    fishNo,
+    FishNo,
   ]);
 
   db.query(query, (err, results) => {
@@ -424,7 +424,7 @@ app.post("/api/print", async (req, res) => {
   try {
     const {
       printerName: unPrinterName,
-      fishNo,
+      FishNo,
       AdSoyad,
       date,
       TelNo,
@@ -451,7 +451,7 @@ app.post("/api/print", async (req, res) => {
     const pdfFilePath = path.join(
       os.homedir(),
       "Desktop/enigma-records",
-      `${AdSoyad}_${fishNo}_${date}.pdf`
+      `${AdSoyad}_${FishNo}_${date}.pdf`
     );
 
     const doc = new PDFDocument({
@@ -470,12 +470,12 @@ app.post("/api/print", async (req, res) => {
 
     // drawTicket fonksiyonunu asenkron hale getirerek, QR kodun oluşturulmasını bekliyoruz
     async function drawTicket(xOffset) {
-      const qrCodePath = path.join(os.tmpdir(), `qr_${fishNo}.png`);
+      const qrCodePath = path.join(os.tmpdir(), `qr_${FishNo}.png`);
 
       // QR kod oluşturulmasını bekleyin
       await QRCode.toFile(
         qrCodePath,
-        `http://192.168.1.151:2431/api-client/qr-sorgula?fishNo=${fishNo}`,
+        `http://192.168.1.151:2431/api-client/qr-sorgula?FishNo=${FishNo}`,
         { width: 20 }
       );
 
@@ -501,7 +501,7 @@ app.post("/api/print", async (req, res) => {
         yPos += 10;
       });
 
-      doc.fontSize(10).text(`Fiş No: ${fishNo}`, xOffset + 140, 85);
+      doc.fontSize(10).text(`Fiş No: ${FishNo}`, xOffset + 140, 85);
       doc
         .moveTo(xOffset + 140, 95)
         .lineTo(xOffset + 200, 95)
@@ -531,7 +531,7 @@ app.post("/api/print", async (req, res) => {
     for (let i = 1; i <= 8; i++) {
       doc.rect(xOffset + 10 + i * colWidth, tableY, colWidth, 20).stroke();
 
-      doc.fontSize(8).text(fishNo, xOffset + 12 + i * colWidth, tableY + 6, {
+      doc.fontSize(8).text(FishNo, xOffset + 12 + i * colWidth, tableY + 6, {
         width: colWidth,
         align: "center",
       });
@@ -621,7 +621,7 @@ app.get("/api/checkAdmin", (req, res) => {
     return res.status(401).json({ message: "Kullanıcı oturumu yok!" });
   }
 
-  const query = `SELECT role FROM adminUsers WHERE username = ?`;
+  const query = `SELECT role FROM users WHERE username = ?`;
 
   db.query(query, [username], (err, results) => {
     if (err) {
@@ -708,8 +708,7 @@ app.post("/api/login", async (req, res) => {
       });
     }
 
-    const tableStatusQuery =
-      "SELECT * FROM ETSTSR.tablestatus WHERE username = ?";
+    const tableStatusQuery = "SELECT * FROM SP.tablestatus WHERE username = ?";
     const tableStatusResults = await dbQuery(tableStatusQuery, [username]);
 
     return res.status(200).json({
@@ -724,13 +723,94 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-app.get("/api/check-product-access/:fishNo", (req, res) => {
+// app.post("/api/login", async (req, res) => {
+//   const { username, password } = req.body;
+
+//   if (!username || !password) {
+//     return res
+//       .status(400)
+//       .json({ message: "Kullanıcı adı ve şifre gereklidir." });
+//   }
+
+//   try {
+//     // 1. Eğer .env'deki tek seferlik admin girişini kontrol ediyorsak
+//     if (process.env.SINGLE_USE_LOGIN === "true") {
+//       if (
+//         username === process.env.ADMIN_USERNAME &&
+//         password === process.env.ADMIN_PASSWORD
+//       ) {
+//         // Tek seferlik giriş başarılı oldu
+//         req.session.user = { username, role: "admin" };
+
+//         process.env.SINGLE_USE_LOGIN = "false";
+
+//         return res.status(200).json({
+//           message: "Tek seferlik admin girişi yapıldı!",
+//           user: { username, role: "admin" },
+//           redirectTo: "/add-user",
+//           permissions: "admin",
+//         });
+//       } else {
+//         return res
+//           .status(401)
+//           .json({ message: "Geçersiz admin kullanıcı adı veya şifre. ." });
+//       }
+//     }
+
+//     // 2. Normal login süreci
+//     const userQuery = "SELECT * FROM users WHERE username = ?";
+//     const userResults = await dbQuery(userQuery, [username]);
+
+//     if (!userResults || userResults.length === 0) {
+//       return res.status(401).json({ message: "Geçersiz kullanıcı adı." });
+//     }
+
+//     const user = userResults[0];
+//     const hashedPassword = user.password;
+
+//     if (!hashedPassword) {
+//       console.error("Kullanıcının hashlenmiş şifresi bulunamadı.");
+//       return res.status(500).json({ message: "Kullanıcı şifresi eksik." });
+//     }
+
+//     const isPasswordValid = await bcrypt.compare(password, hashedPassword);
+//     if (!isPasswordValid) {
+//       return res.status(401).json({ message: "Geçersiz şifre." });
+//     }
+
+//     req.session.user = { username: user.username, role: user.role };
+
+//     if (user.role === "admin") {
+//       return res.status(200).json({
+//         message: "Başarıyla giriş yapıldı!",
+//         user: { username: user.username, role: user.role },
+//         redirectTo: "/",
+//         permissions: "admin",
+//       });
+//     }
+
+//     const tableStatusQuery = "SELECT * FROM SP.tablestatus WHERE username = ?";
+//     const tableStatusResults = await dbQuery(tableStatusQuery, [username]);
+
+//     return res.status(200).json({
+//       message: "Başarıyla giriş yapıldı!",
+//       user: { username: user.username, role: user.role },
+//       redirectTo: "/show-user-status",
+//       permissions: tableStatusResults[0] || {},
+//     });
+//   } catch (error) {
+//     console.error("Giriş işlemi sırasında hata:", error);
+//     return res.status(500).json({ message: "Sunucu hatası." });
+//   }
+// });
+
+app.get("/api/check-product-access/:FishNo", (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
   if (!ALLOWED_ORIGINS.includes(clientIP)) {
     return res.status(403).json({ message: "Erişim reddedildi." });
   }
-  const { fishNo } = req.params;
+  const { FishNo } = req.params;
   const username = req.session.user?.username;
 
   if (!username) {
@@ -739,7 +819,7 @@ app.get("/api/check-product-access/:fishNo", (req, res) => {
       .json({ isAuthorized: false, message: "Oturum açılmamış." });
   }
 
-  const query = `SELECT * FROM ETSTSR.tablestatus WHERE username = ? AND ProductInfoPage = 1`;
+  const query = `SELECT * FROM SP.tablestatus WHERE username = ? AND ProductInfoPage = 1`;
   db.query(query, [username], (err, results) => {
     if (err) {
       console.error("Veritabanı hatası:", err);
@@ -791,7 +871,7 @@ app.post("/api/check-page-access", (req, res) => {
     }
 
     // Admin değilse, yetkiyi kontrol et
-    const query = `SELECT ?? FROM ETSTSR.tablestatus WHERE username = ?`;
+    const query = `SELECT ?? FROM SP.tablestatus WHERE username = ?`;
 
     db.query(query, [page, username], (err, results) => {
       if (err) {
@@ -857,7 +937,7 @@ app.get("/api/get-user-records/:username", (req, res) => {
   const { username } = req.params;
 
   // Kullanıcının görebileceği sütunları getir
-  const statusQuery = "SELECT * FROM ETSTSR.tablestatus WHERE username = ?";
+  const statusQuery = "SELECT * FROM SP.tablestatus WHERE username = ?";
   db.query(statusQuery, [username], (err, statusResults) => {
     if (err) {
       console.error("Yetki kontrolü sırasında hata:", err.message);
@@ -919,11 +999,11 @@ app.get("/api/get-user-records/:username", (req, res) => {
 });
 
 app.post("/api/add-user", async (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
   const { username, password, email, role } = req.body;
 
   if (!username || !password || !email || !role) {
@@ -935,7 +1015,6 @@ app.post("/api/add-user", async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // İlk query için
     const query = `INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)`;
     db.query(query, [username, hashedPassword, email, role], (err, results) => {
       if (err) {
@@ -945,25 +1024,10 @@ app.post("/api/add-user", async (req, res) => {
           .json({ success: false, message: "Sunucu hatası." });
       }
 
-      // İkinci query'yi burada tetikliyorsanız
-      const query2 = `INSERT INTO adminUsers (username, password, email, role) VALUES (?, ?, ?, ?)`;
-      db.query(
-        query2,
-        [username, hashedPassword, email, role],
-        (err, results) => {
-          if (err) {
-            console.error("SQL hatası:", err.message);
-            return res
-              .status(500)
-              .json({ success: false, message: "Sunucu hatası." });
-          }
-
-          // Yanıtı bir kez gönderin
-          return res
-            .status(200)
-            .json({ success: true, message: "Kullanıcı başarıyla eklendi." });
-        }
-      );
+      // Yanıtı bir kez gönderin
+      return res
+        .status(200)
+        .json({ success: true, message: "Kullanıcı başarıyla eklendi." });
     });
   } catch (error) {
     console.error("Hata:", error.message);
@@ -1010,7 +1074,7 @@ app.put("/api/update-user/:id", async (req, res) => {
 
       // İkinci tabloyu güncelle
       const query2 = `
-        UPDATE adminUsers 
+        UPDATE users 
         SET username = ?, email = ?, role = ?, password = COALESCE(?, password) 
         WHERE id = ?`;
       const params2 = [username, email, role, hashedPassword, userId];
@@ -1042,11 +1106,11 @@ app.put("/api/update-user/:id", async (req, res) => {
 });
 
 app.delete("/api/delete-user/:id", async (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
   const { id } = req.params;
 
   try {
@@ -1060,7 +1124,7 @@ app.delete("/api/delete-user/:id", async (req, res) => {
 
     // İkinci sorgu: 'adminUsers' tablosundan sil
     const deleteFromAdminUsers = new Promise((resolve, reject) => {
-      db.query("DELETE FROM adminUsers WHERE id = ?", [id], (err, result) => {
+      db.query("DELETE FROM users WHERE id = ?", [id], (err, result) => {
         if (err) return reject(err);
         resolve(result);
       });
@@ -1079,12 +1143,12 @@ app.delete("/api/delete-user/:id", async (req, res) => {
 });
 
 app.get("/api/get-users-data", (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
-  const query = "SELECT id, username, email, role, created_at FROM users";
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
+  const query = "SELECT id, username, email, role, createdAt FROM users";
 
   db.query(query, (err, results) => {
     if (err) {
@@ -1097,14 +1161,14 @@ app.get("/api/get-users-data", (req, res) => {
 });
 
 app.get("/api/get-user/:id", (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
   const userId = req.params.id;
   const query =
-    "SELECT id, username, email, role, created_at FROM users WHERE id = ?";
+    "SELECT id, username, email, role, createdAt FROM users WHERE id = ?";
 
   db.query(query, [userId], (err, results) => {
     if (err) {
@@ -1121,11 +1185,11 @@ app.get("/api/get-user/:id", (req, res) => {
 });
 
 app.post("/api/update-settings-for-user/:id", (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
   const userId = req.params.id;
   const { allowedColumns } = req.body;
 
@@ -1150,13 +1214,8 @@ app.post("/api/update-settings-for-user/:id", (req, res) => {
   });
 });
 
-// server.js (veya ilgili controller dosyası)
-
-// user_settings tablosundan, kullanıcıya ait kayıtları döndüren endpoint
 app.get("/api/get-user-settings/:username", (req, res) => {
   const { username } = req.params;
-  // user_settings tablosunda username alanı varsa bu şekilde sorgula.
-  // Sende "user_id" da olabilir. O zaman önce user'ı bulup, user.id ile arama yaparsın.
   const query = `
     SELECT * FROM user_settings
     WHERE username = ?
@@ -1179,11 +1238,11 @@ app.get("/api/get-user-settings/:username", (req, res) => {
 });
 
 app.post("/api/change-user-settings", (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // ayni ip ise al kardesim
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." }); // TODO: ! KONTROL ET
+  // }
   const { username, permissions } = req.body;
 
   if (!username || !permissions || Object.keys(permissions).length === 0) {
@@ -1195,8 +1254,7 @@ app.post("/api/change-user-settings", (req, res) => {
   const columnsNames = Object.keys(permissions);
   const columnsValues = Object.values(permissions);
 
-  // Kullanıcı var mı kontrol et
-  const checkQuery = `SELECT COUNT(*) AS count FROM ETSTSR.tablestatus WHERE username = ?`;
+  const checkQuery = `SELECT COUNT(*) AS count FROM SP.tablestatus WHERE username = ?`; // ! BURAYA BAK
 
   db.query(checkQuery, [username], (err, result) => {
     if (err) {
@@ -1209,7 +1267,7 @@ app.post("/api/change-user-settings", (req, res) => {
     if (userExists) {
       // Kullanıcı varsa UPDATE yap
       const updateQuery = `
-        UPDATE ETSTSR.tablestatus 
+        UPDATE SP.tablestatus 
         SET ${columnsNames.map((col) => `${col} = ?`).join(", ")}
         WHERE username = ?
       `;
@@ -1230,7 +1288,7 @@ app.post("/api/change-user-settings", (req, res) => {
     } else {
       // Kullanıcı yoksa INSERT yap
       const insertQuery = `
-        INSERT INTO ETSTSR.tablestatus (username, ${columnsNames.join(", ")})
+        INSERT INTO SP.tablestatus (username, ${columnsNames.join(", ")})
         VALUES (?, ${columnsNames.map(() => "?").join(", ")})
       `;
 
@@ -1252,11 +1310,11 @@ app.post("/api/change-user-settings", (req, res) => {
 });
 
 app.get("/api/delivered-products", (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
   const query = "SELECT * FROM records WHERE Durum = 'Teslim Edildi'";
   db.query(query, (err, results) => {
     if (err) {
@@ -1273,16 +1331,16 @@ app.get("/api/delivered-products", (req, res) => {
   });
 });
 
-app.get("/api/getInfoProd/:fishNo", (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+app.get("/api/getInfoProd/:FishNo", (req, res) => {
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
-  const fishNo = req.params.fishNo;
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
+  const FishNo = req.params.FishNo;
 
-  const query = "SELECT * FROM records WHERE fishNo = ? LIMIT 1";
-  db.query(query, [fishNo], (err, results) => {
+  const query = "SELECT * FROM records WHERE FishNo = ? LIMIT 1";
+  db.query(query, [FishNo], (err, results) => {
     if (err) {
       console.error("Veritabanı hatası:", err.message);
       return res.status(500).json({ message: "Veritabanı hatası" });
@@ -1345,11 +1403,11 @@ app.get("/api/protected", authMiddleware, (req, res) => {
 });
 
 app.get("/api/records", authMiddleware, (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
   const { username, role } = req.user; // authMiddleware'den gelen kullanıcı bilgileri
 
   // Eğer kullanıcı 'monitor' rolündeyse sadece kayıtları görsün, düzenleme yapamasın
@@ -1379,16 +1437,16 @@ app.get("/api/records", authMiddleware, (req, res) => {
   }
 });
 
-app.get("/api/record/:fishNo", (req, res) => {
-  const { fishNo } = req.params;
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // İstemci IP'sini al
+app.get("/api/record/:FishNo", (req, res) => {
+  const { FishNo } = req.params;
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // İstemci IP'sini al
 
-  if (!fishNo) {
-    return res.status(400).json({ message: "Fiş numarası gerekli." });
-  }
+  // if (!FishNo) {
+  //   return res.status(400).json({ message: "Fiş numarası gerekli." });
+  // }
 
-  const query = "SELECT * FROM records WHERE fishNo = ?";
-  db.query(query, [fishNo], (err, results) => {
+  const query = "SELECT * FROM records WHERE FishNo = ?";
+  db.query(query, [FishNo], (err, results) => {
     if (err) {
       console.error("Veritabanı hatası:", err.message);
       return res.status(500).json({ message: "Sunucu hatası." });
@@ -1399,11 +1457,11 @@ app.get("/api/record/:fishNo", (req, res) => {
     }
 
     // ** eğer istek yetkili istemciden gelmiyorsa mesaj döndür **
-    if (clientIP !== "http://192.168.1.151:80") {
-      return res
-        .status(403)
-        .json({ message: "Bu verilere erişim izniniz yok." });
-    }
+    // if (clientIP !== "http://192.168.1.151:1342") {
+    //   return res
+    //     .status(403)
+    //     .json({ message: "Bu verilere erişim izniniz yok." });
+    // }
 
     // yetkili istemciye tam veriyi gönder
     res.json(results[0]);
@@ -1411,32 +1469,32 @@ app.get("/api/record/:fishNo", (req, res) => {
 });
 
 app.get("/api/get-all-fishNos", (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (clientIP !== "http://192.168.1.151:80") {
-    return res.status(403).json({ message: "Bu verilere erişim izniniz yok." });
-  }
+  // if (clientIP !== "http://192.168.1.151:80") {
+  //   return res.status(403).json({ message: "Bu verilere erişim izniniz yok." });
+  // }
 
-  const query = "SELECT fishNo FROM records"; // tüm geçerli `fishNo` değerlerini al
+  const query = "SELECT FishNo FROM records"; // tüm geçerli `FishNo` değerlerini al
 
   db.query(query, (err, results) => {
     if (err) {
       console.error("Veritabanı hatası:", err);
-      return res.status(500).json({ message: "fishNo verileri alınamadı." });
+      return res.status(500).json({ message: "FishNo verileri alınamadı." });
     }
 
-    const fishNos = results.map((row) => row.fishNo); // fishNo değerlerini bir diziye çevir
+    const fishNos = results.map((row) => row.FishNo); // FishNo değerlerini bir diziye çevir
     res.json(fishNos);
   });
 });
 
-app.put("/api/record/:fishNo", (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // İstemci IP'sini al
+app.put("/api/record/:FishNo", (req, res) => {
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // İstemci IP'sini al
 
-  if (clientIP !== "http://192.168.1.151:80") {
-    return res.status(403).json({ message: "Bu verilere erişim izniniz yok." });
-  }
-  const { fishNo } = req.params;
+  // if (clientIP !== "http://192.168.1.151:80") {
+  //   return res.status(403).json({ message: "Bu verilere erişim izniniz yok." });
+  // }
+  const { FishNo } = req.params;
   const {
     AdSoyad,
     TelNo,
@@ -1457,7 +1515,7 @@ app.put("/api/record/:fishNo", (req, res) => {
     TeslimEtmeTarihi,
   } = req.body;
 
-  console.log("Gelen Veriler:", req.body); // Verilerin eksiksiz geldiğini kontrol et
+  // console.log("Gelen Veriler:", req.body); // Verilerin eksiksiz geldiğini kontrol et
 
   const sanitizeInput = (value) => (value === undefined ? null : value);
 
@@ -1480,7 +1538,7 @@ app.put("/api/record/:fishNo", (req, res) => {
     sanitizeInput(Yapilanlar) || "",
     HazirlamaTarihi ? formatDateForMySQL(HazirlamaTarihi) : null,
     TeslimEtmeTarihi ? formatDateForMySQL(TeslimEtmeTarihi) : null,
-    fishNo,
+    FishNo,
   ];
 
   const query = `
@@ -1488,10 +1546,10 @@ app.put("/api/record/:fishNo", (req, res) => {
     SET AdSoyad = ?, TelNo = ?, SeriNo = ?, TeslimAlan = ?, Durum = ?, 
         Teknisyen = ?, Urun = ?, Marka = ?, Model = ?, GarantiDurumu = ?, Ucret = ?, BirlikteAlinanlar = ? ,Sorunlar = ?, Aciklama = ?, Yapilanlar = ?,
         HazirlamaTarihi = ?, TeslimEtmeTarihi = ?
-    WHERE fishNo = ?
+    WHERE FishNo = ?
   `;
 
-  console.log("Güncellenen Değerler:", queryParams);
+  // console.log("Güncellenen Değerler:", queryParams);
 
   db.query(query, queryParams, (err, results) => {
     if (err) {
@@ -1516,7 +1574,7 @@ app.get("/api/export-records", (req, res) => {
     return res.status(403).json({ message: "Erişim reddedildi." });
   }
   const query = `
-    SELECT fishNo, AdSoyad, DATE_FORMAT(TeslimAlmaTarihi, '%Y-%m-%d %H:%i:%s') AS TeslimAlmaTarihi, 
+    SELECT FishNo, AdSoyad, DATE_FORMAT(TeslimAlmaTarihi, '%Y-%m-%d %H:%i:%s') AS TeslimAlmaTarihi, 
            TelNo, Urun, Marka, Model, SeriNo, GarantiDurumu, TeslimAlan, Teknisyen, 
            Ucret, Sorunlar, DATE_FORMAT(HazirlamaTarihi, '%Y-%m-%d %H:%i:%s') AS HazirlamaTarihi, 
            DATE_FORMAT(TeslimEtmeTarihi, '%Y-%m-%d %H:%i:%s') AS TeslimEtmeTarihi, Durum 
@@ -1536,11 +1594,11 @@ app.get("/api/export-records", (req, res) => {
 });
 
 app.post("/api/record", (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
   const { AdSoyad } = req.body;
 
   if (!AdSoyad) {
@@ -1567,11 +1625,11 @@ const generateCustomID = () => {
 };
 
 app.post("/api/addpro", (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip;
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip;
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
 
   const {
     AdSoyad,
@@ -1611,7 +1669,7 @@ app.post("/api/addpro", (req, res) => {
 
   // Teknisyen alanını artık parametreden alıyoruz, bu yüzden 'Ibrahim Bey' sabiti kaldırıldı.
   const insertRecordQuery = `\
-    INSERT INTO ETSTSR.records\n    (AdSoyad, TeslimAlmaTarihi, TelNo, TeslimAlan, Teknisyen, SeriNo, Urun, Marka, Model, GarantiDurumu, BirlikteAlinanlar, Sorunlar, Aciklama, Ucret, HazirlamaTarihi, TeslimEtmeTarihi, Durum, kdv)\n    VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, 'Bekliyor', ?);\
+    INSERT INTO SP.records\n    (AdSoyad, TeslimAlmaTarihi, TelNo, TeslimAlan, Teknisyen, SeriNo, Urun, Marka, Model, GarantiDurumu, BirlikteAlinanlar, Sorunlar, Aciklama, Ucret, HazirlamaTarihi, TeslimEtmeTarihi, Durum, kdv)\n    VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, 'Bekliyor', ?);\
   `;
 
   db.query(
@@ -1639,30 +1697,30 @@ app.post("/api/addpro", (req, res) => {
           .json({ message: "Bir hata oluştu.", error: err.message });
       }
 
-      // **Eklendikten sonra ilgili fishNo değerini al**
+      // **Eklendikten sonra ilgili FishNo değerini al**
       db.query(
-        "SELECT fishNo FROM ETSTSR.records WHERE AdSoyad = ? ORDER BY fishNo DESC LIMIT 1;",
+        "SELECT FishNo FROM SP.records WHERE AdSoyad = ? ORDER BY FishNo DESC LIMIT 1;",
         [AdSoyad],
         (err, rows) => {
           if (err) {
-            console.error("SQL Hatası (fishNo alma):", err.message);
+            console.error("SQL Hatası (FishNo alma):", err.message);
             return res
               .status(500)
-              .json({ message: "fishNo alınamadı.", error: err.message });
+              .json({ message: "FishNo alınamadı.", error: err.message });
           }
 
           if (!rows || rows.length === 0) {
             return res
               .status(500)
-              .json({ message: "fishNo değeri bulunamadı!" });
+              .json({ message: "FishNo değeri bulunamadı!" });
           }
 
-          const fishNoID = rows[0].fishNo; // fishNo değerini al
+          const fishNoID = rows[0].FishNo; // FishNo değerini al
           const customID = generateCustomID(); // Yeni formatta ID oluştur
 
           // **costumerData'ya ekle**
           const costumerQuery = `\
-            INSERT INTO ETSTSR.costumerData (id, AdSoyad, fishNoID)\n            VALUES (?, ?, ?)\n            ON DUPLICATE KEY UPDATE fishNoID = VALUES(fishNoID);\
+            INSERT INTO SP.costumerData (id, AdSoyad, fishNoID)\n            VALUES (?, ?, ?)\n            ON DUPLICATE KEY UPDATE fishNoID = VALUES(fishNoID);\
           `;
 
           db.query(
@@ -1690,21 +1748,21 @@ app.post("/api/addpro", (req, res) => {
   );
 });
 
-app.delete("/api/deleteProduct/:fishNo", async (req, res) => {
+app.delete("/api/deleteProduct/:FishNo", async (req, res) => {
   const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
   if (!ALLOWED_ORIGINS.includes(clientIP)) {
     return res.status(403).json({ message: "Erişim reddedildi." });
   }
 
-  const { fishNo } = req.params;
+  const { FishNo } = req.params;
 
   try {
     // Ürünü veritabanından silmek için SQL sorgusunu çalıştırıyoruz
-    const query = "DELETE FROM records WHERE fishNo = ?";
+    const query = "DELETE FROM records WHERE FishNo = ?";
 
     // Veritabanı sorgusunu çalıştır
-    db.query(query, [fishNo], (err, result) => {
+    db.query(query, [FishNo], (err, result) => {
       if (err) {
         console.error("Veritabanı hatası:", err.message);
         return res.status(500).json({ message: "Sunucu hatası" });
