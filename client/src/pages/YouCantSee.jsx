@@ -17,7 +17,7 @@ export default function YouCantSee() {
 
         const fetchValidFishNos = async () => {
             try {
-                const response = await axios.get(`http://127.0.0.1:2431/api/get-all-fishNos`);
+                const response = await axios.get(`http://localhost:2431/api/get-all-fishNos`);
                 setValidFishNos(response.data); // Tüm FishNo değerlerini al
             } catch (error) {
                 console.error("FishNo verileri çekilirken hata oluştu:", error);
@@ -47,7 +47,7 @@ export default function YouCantSee() {
     const handleLogout = async () => {
         try {
             // Backend'e çıkış işlemi için istek gönder
-            const response = await fetch("http://127.0.0.1:2431/api/logout", {
+            const response = await fetch("http://localhost:2431/api/logout", {
                 method: "POST",
                 credentials: "include", // Çerezleri gönder
             });

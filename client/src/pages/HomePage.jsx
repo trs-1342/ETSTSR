@@ -62,7 +62,7 @@ export default function HomePage() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const resp = await fetch("http://127.0.0.1:2431/api/checkAdmin", {
+        const resp = await fetch("http://localhost:2431/api/checkAdmin", {
           method: "GET",
           credentials: "include",
         });
@@ -90,7 +90,7 @@ export default function HomePage() {
     if (!isAuthorized) return;
     const fetchRecords = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:2431/api/records", {
+        const response = await fetch("http://localhost:2431/api/records", {
           method: "GET",
           credentials: "include",
         });
@@ -489,7 +489,7 @@ export default function HomePage() {
   const handleLogout = async () => {
     try {
       // Backend'e çıkış işlemi için istek gönder
-      const response = await fetch("http://127.0.0.1:2431/api/logout", {
+      const response = await fetch("http://localhost:2431/api/logout", {
         method: "POST",
         credentials: "include", // Çerezleri gönder
       });

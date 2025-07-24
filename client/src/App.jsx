@@ -68,7 +68,7 @@ function AppContent() {
 
     // Admin değilse, tablestatus'tan yetkileri çek
     fetch(
-      `http://127.0.0.1:2431/api/get-user-permissions/${user.username}`,
+      `http://localhost:2431/api/get-user-permissions/${user.username}`,
       {
         credentials: "include", // session cookie
       }

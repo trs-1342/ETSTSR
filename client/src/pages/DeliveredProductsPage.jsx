@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as exceljs from "exceljs";
-import { FaBars, FaTimes, FaArchive } from "react-icons/fa";
-import { IoHome } from "react-icons/io5";
-import { IoMdLogOut } from "react-icons/io";
-import { IoSettingsSharp } from "react-icons/io5";
 import { MdEditSquare } from "react-icons/md";
 import "../css/HomePage.css";
 import "../css/DeliveredProductsPagecss.css";
@@ -44,12 +40,10 @@ export default function DeliveredProductsPage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(
-          "http://127.0.0.1:2431/api/checkAdmin",
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch("http://localhost:2431/api/checkAdmin", {
+          method: "GET",
+          credentials: "include",
+        });
 
         if (response.ok) {
           const data = await response.json();
@@ -70,7 +64,7 @@ export default function DeliveredProductsPage() {
     const fetchTeslimEdilenler = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:2431/api/delivered-products"
+          "http://localhost:2431/api/delivered-products"
         );
 
         if (!response.ok) {
@@ -185,19 +179,6 @@ export default function DeliveredProductsPage() {
     exceljs.writeFile(workbook, fileName);
   };
 
-  // const filteredTeslimEdilenKayitlar = teslimEdilenKayitlar.filter((kayit) => {
-  //   const garantiUygun =
-  //     garantiFiltre === "Hepsi" ||
-  //     kayit.GarantiDurumu?.toLowerCase() === garantiFiltre.toLowerCase();
-  //   const tarihUygun =
-  //     !filtreTarihi ||
-  //     (kayit.TeslimAlmaTarihi &&
-  //       new Date(kayit.TeslimAlmaTarihi).toISOString().split("T")[0] ===
-  //       filtreTarihi);
-
-  //   return garantiUygun && tarihUygun;
-  // });
-
   const filteredTeslimEdilenKayitlar = teslimEdilenKayitlar.filter((kayit) => {
     const garantiUygun =
       garantiFiltre === "Hepsi" ||
@@ -217,24 +198,6 @@ export default function DeliveredProductsPage() {
       [index]: !prevState[index],
     }));
   };
-
-  // const sortData = (key) => {
-  //   let direction = "asc";
-  //   if (sortConfig.key === key && sortConfig.direction === "asc") {
-  //     direction = "desc";
-  //   }
-  //   setSortConfig({ key, direction });
-
-  //   const sortedData = [...kayitlar].sort((a, b) => {
-  //     if (!a[key]) return 1;
-  //     if (!b[key]) return -1;
-  //     if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
-  //     if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
-  //     return 0;
-  //   });
-
-  //   setKayitlar(sortedData);
-  // };
 
   function parseDateString(dateString) {
     if (!dateString) return null;
@@ -296,30 +259,30 @@ export default function DeliveredProductsPage() {
     setTeslimEdilenKayitlar(sortedData);
   };
 
-  const toggleToolsPanel = () => {
-    setIsToolsPanelOpen(!isToolsPanelOpen);
-  };
+  // const toggleToolsPanel = () => {
+  //   setIsToolsPanelOpen(!isToolsPanelOpen);
+  // };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("http://127.0.0.1:2431/api/logout", {
-        method: "POST",
-        credentials: "include", // Çerezleri gönder
-      });
+  // const handleLogout = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:2431/api/logout", {
+  //       method: "POST",
+  //       credentials: "include", // Çerezleri gönder
+  //     });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Çıkış işlemi başarısız oldu.");
-      }
+  //     if (!response.ok) {
+  //       const data = await response.json();
+  //       throw new Error(data.message || "Çıkış işlemi başarısız oldu.");
+  //     }
 
-      // alert("Çıkış başarılı.");
-      window.location.href = "http://127.0.0.1:1342/";
-    } catch (error) {
-      console.error("Çıkış hatası:", error.message);
-      // alert(`Çıkış Yapıldı, Çıkış hatası: ${error.message}`);
-      window.location.href = "http://127.0.0.1:1342/";
-    }
-  };
+  //     // alert("Çıkış başarılı.");
+  //     window.location.href = "http://localhost:1342/";
+  //   } catch (error) {
+  //     console.error("Çıkış hatası:", error.message);
+  //     // alert(`Çıkış Yapıldı, Çıkış hatası: ${error.message}`);
+  //     window.location.href = "http://localhost:1342/";
+  //   }
+  // };
 
   let selectedRecords = [];
 

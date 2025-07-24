@@ -45,7 +45,7 @@ export default function EditPage() {
     const fetchUser = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:2431/api/checkAdmin",
+          "http://localhost:2431/api/checkAdmin",
           {
             method: "GET",
             credentials: "include",
@@ -74,7 +74,7 @@ export default function EditPage() {
       return;
     }
 
-    fetch(`http://127.0.0.1:2431/api/record/${FishNo}`, {
+    fetch(`http://localhost:2431/api/record/${FishNo}`, {
       method: "GET",
       credentials: "include",
     })
@@ -191,7 +191,7 @@ export default function EditPage() {
       })
     );
 
-    fetch(`http://127.0.0.1:2431/api/record/${FishNo}`, {
+    fetch(`http://localhost:2431/api/record/${FishNo}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(temizKayit),

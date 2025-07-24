@@ -22,7 +22,7 @@ export default function LoginClientPage() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:2431/api-client/sorgula/`,
+        `http://localhost:2431/api-client/sorgula/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

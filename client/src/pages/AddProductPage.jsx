@@ -12,7 +12,7 @@ export default function AddProductPage() {
     const fetchUser = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:2431/api/checkAdmin",
+          "http://localhost:2431/api/checkAdmin",
           {
             credentials: "include",
           }
@@ -71,7 +71,7 @@ export default function AddProductPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://127.0.0.1:2431/api/addpro", {
+      const response = await fetch("http://localhost:2431/api/addpro", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +88,7 @@ export default function AddProductPage() {
       }
 
       alert("Kayıt başarıyla eklendi.");
-      window.location.href = "http://127.0.0.1:1342/";
+      window.location.href = "http://localhost:1342/";
       const data = JSON.parse(text);
       console.log("Ürün eklendi:", data);
     } catch (error) {

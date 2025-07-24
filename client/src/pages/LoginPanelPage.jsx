@@ -30,7 +30,7 @@ export default function LoginPanelPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://127.0.0.1:2431/api/login/", {
+      const response = await fetch("http://localhost:2431/api/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

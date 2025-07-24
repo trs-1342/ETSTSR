@@ -29,9 +29,18 @@ export default function ClientPage() {
     }
   }, [navigate, location.search]);
 
+  // const handleLogout = () => {
+  //   localStorage.removeItem("userSession"); // Oturum temizle
+  //   navigate("/login-client"); // Anasayfaya yönlendir
+  // };
+
   const handleLogout = () => {
-    localStorage.removeItem("userSession"); // Oturum temizle
-    navigate("/login-client"); // Anasayfaya yönlendir
+    localStorage.clear(); // Tüm localStorage'ı sil
+    sessionStorage.clear(); // Varsa sessionStorage'ı da sil
+
+    fetch("/logout").then(() => {
+      window.location.href = "/login"; // Login sayfasına yönlendir
+    });
   };
 
   // ✅ Yazdır fonksiyonu

@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "vite -- --host 127.0.0.1 --port 1342",
+    "start": "vite -- --host localhost --port 1342",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

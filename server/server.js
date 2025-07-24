@@ -23,13 +23,13 @@ const fs = require("fs");
 app.use(express.json());
 app.use(bodyParser.json());
 
-const DB_TABLE_NAME = process.env.DB_TABLE_NAME;
+const DB_TABLE_NAME = process.env.DB_TABLE_NAME || "records";
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "SP",
+  password: process.env.DB_PASSWORD || "" || "password",
+  database: process.env.DB_NAME || "sp",
   port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306,
 });
 
@@ -50,7 +50,7 @@ app.use(
     saveUninitialized: true,
     rolling: false,
     cookie: {
-      maxAge: 43200000,
+      maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 yıl
       sameSite: "lax",
       secure: false,
     },
@@ -58,12 +58,12 @@ app.use(
 );
 
 const ALLOWED_ORIGINS = [
-  "http://127.0.0.1",
-  "http://127.0.0.1:80",
-  "http://127.0.0.1:2431",
-  "http://127.0.0.1",
-  "http://127.0.0.1:80",
-  "http://127.0.0.1:2431",
+  "http://localhost",
+  "http://localhost:1342",
+  "http://localhost:2431",
+  "http://localhost:2431",
+  "http://localhost:80",
+  "http://localhost:2431",
 ];
 
 app.use(
@@ -647,11 +647,11 @@ app.get("/api/checkAdmin", (req, res) => {
 });
 
 app.post("/api/logout", (req, res) => {
-  const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
+  // const clientIP = req.headers.origin || req.headers.referer || req.ip; // istemci IP'sini al
 
-  if (!ALLOWED_ORIGINS.includes(clientIP)) {
-    return res.status(403).json({ message: "Erişim reddedildi." });
-  }
+  // if (!ALLOWED_ORIGINS.includes(clientIP)) {
+  //   return res.status(403).json({ message: "Erişim reddedildi." });
+  // }
   req.session.destroy((err) => {
     if (err) {
       console.error("Oturum sonlandırma hatası:", err);
@@ -1801,5 +1801,5 @@ app.all(/^\/.*/, (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`http://192.168.1.151:${PORT}`);
+  console.log(`http://localhost:${PORT}`);
 });

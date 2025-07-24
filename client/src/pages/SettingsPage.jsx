@@ -12,7 +12,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:2431/api/get-users-data");
+        const response = await fetch("http://localhost:2431/api/get-users-data");
         if (!response.ok) throw new Error("Kullanıcı listesi alınamadı!");
 
         const data = await response.json();
@@ -31,7 +31,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:2431/api/checkAdmin", {
+        const response = await fetch("http://localhost:2431/api/checkAdmin", {
           credentials: "include",
         });
         if (!response.ok) throw new Error("Yetki kontrolü başarısız!");
@@ -52,7 +52,7 @@ export default function SettingsPage() {
     if (!window.confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) return;
 
     try {
-      const response = await fetch(`http://127.0.0.1:2431/api/delete-user/${userId}`, {
+      const response = await fetch(`http://localhost:2431/api/delete-user/${userId}`, {
         method: "DELETE",
       });
 
@@ -92,7 +92,7 @@ export default function SettingsPage() {
   const handleLogout = async () => {
     try {
       // Backend'e çıkış işlemi için istek gönder
-      const response = await fetch("http://127.0.0.1:2431/api/logout", {
+      const response = await fetch("http://localhost:2431/api/logout", {
         method: "POST",
         credentials: "include", // Çerezleri gönder
       });
@@ -171,7 +171,6 @@ export default function SettingsPage() {
         <a className="btn btn-success mx-2 mt-4" href="/">Anasayfa</a>
         <br />
         <a className="btn btn-danger rounded-1 mt-2" onClick={handleLogout}>
-          {/* <IoMdLogOut style={{ width: "30px", height: "30px" }} /> */}
           Çıkış Yap
         </a>
       </div>
