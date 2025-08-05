@@ -728,7 +728,7 @@ export default function DeliveredProductsPage() {
                     {kayit.Aciklama?.length > 100 ? (
                       <>
                         <span className="text-break">
-                          {acikAciklama[index]
+                          {Aciklama[index]
                             ? kayit.Aciklama
                             : `${kayit.Aciklama.slice(0, 50)}...`}
                         </span>
@@ -736,7 +736,7 @@ export default function DeliveredProductsPage() {
                           onClick={() => toggleAciklama(index)}
                           className="btn btn-sm btn-info mt-1"
                         >
-                          {acikAciklama[index] ? "Daha Az" : "Daha Fazla"}
+                          {Aciklama[index] ? "Daha Az" : "Daha Fazla"}
                         </button>
                       </>
                     ) : (
